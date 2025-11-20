@@ -1,55 +1,67 @@
 import React from 'react';
 import { GridColDef } from '@mui/x-data-grid';
 import DataTable from '../components/DataTable';
-import { fetchTotalUsers } from '../api/ApiCollection';
+import { fetchCategories } from '../api/ApiCollection';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import AddData from '../components/AddData';
 
-const Users = () => {
+const Categories = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const { isLoading, isError, isSuccess, data } = useQuery({
-    queryKey: ['allusers'],
-    queryFn: fetchTotalUsers,
+    queryKey: ['allcategories'],
+    queryFn: fetchCategories,
   });
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 90 },
     {
-      field: 'firstName',
+      field: 'name',
       headerName: 'Name',
-      minWidth: 220,
+      minWidth: 150,
+      flex: 1,
+    },
+    {
+      field: 'icon',
+      headerName: 'Icon',
+      minWidth: 100,
       flex: 1,
       renderCell: (params) => {
         return (
           <div className="flex gap-3 items-center">
-            <div className="avatar">
-              <div className="w-6 xl:w-9 rounded-full">
-                <img
-                  src={params.row.img || '/Portrait_Placeholder.png'}
-                  alt="user-picture"
-                />
-              </div>
-            </div>
-            <span className="mb-0 pb-0 leading-none">
-              {params.row.firstName} {params.row.lastName}
-            </span>
+            <span className="text-2xl">{params.row.icon}</span>
           </div>
         );
       },
     },
     {
-      field: 'email',
-      type: 'string',
-      headerName: 'Email',
+      field: 'color',
+      headerName: 'Color',
+      minWidth: 100,
+      flex: 1,
+      renderCell: (params) => {
+        return (
+          <div className="flex gap-3 items-center">
+            <div 
+              className="w-6 h-6 rounded-full"
+              style={{ backgroundColor: params.row.color }}
+            ></div>
+            <span>{params.row.color}</span>
+          </div>
+        );
+      },
+    },
+    {
+      field: 'description',
+      headerName: 'Description',
       minWidth: 200,
       flex: 1,
     },
     {
-      field: 'phone',
-      type: 'string',
-      headerName: 'Phone',
-      minWidth: 120,
+      field: 'isActive',
+      headerName: 'Active',
+      width: 80,
+      type: 'boolean',
       flex: 1,
     },
     {
@@ -59,37 +71,20 @@ const Users = () => {
       type: 'string',
       flex: 1,
     },
-    // {
-    //   field: 'fullName',
-    //   headerName: 'Full name',
-    //   description:
-    //     'This column has a value getter and is not sortable.',
-    //   sortable: false,
-    //   width: 160,
-    //   valueGetter: (params: GridValueGetterParams) =>
-    //     `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-    // },
-    {
-      field: 'verified',
-      headerName: 'Verified',
-      width: 80,
-      type: 'boolean',
-      flex: 1,
-    },
   ];
 
   React.useEffect(() => {
     if (isLoading) {
-      toast.loading('Loading...', { id: 'promiseUsers' });
+      toast.loading('Loading...', { id: 'promiseCategories' });
     }
     if (isError) {
       toast.error('Error while getting the data!', {
-        id: 'promiseUsers',
+        id: 'promiseCategories',
       });
     }
     if (isSuccess) {
       toast.success('Got the data successfully!', {
-        id: 'promiseUsers',
+        id: 'promiseCategories',
       });
     }
   }, [isError, isLoading, isSuccess]);
@@ -100,11 +95,11 @@ const Users = () => {
         <div className="w-full flex justify-between mb-5">
           <div className="flex gap-1 justify-start flex-col items-start">
             <h2 className="font-bold text-2xl xl:text-4xl mt-0 pt-0 text-base-content dark:text-neutral-200">
-              Users
+              Categories
             </h2>
             {data && data.length > 0 && (
               <span className="text-neutral dark:text-neutral-content font-medium text-base">
-                {data.length} Users Found
+                {data.length} Categories Found
               </span>
             )}
           </div>
@@ -114,19 +109,19 @@ const Users = () => {
               isLoading ? 'btn-disabled' : 'btn-primary'
             }`}
           >
-            Add New User +
+            Add New Category +
           </button>
         </div>
         {isLoading ? (
           <DataTable
-            slug="users"
+            slug="categories"
             columns={columns}
             rows={[]}
             includeActionColumn={true}
           />
         ) : isSuccess ? (
           <DataTable
-            slug="users"
+            slug="categories"
             columns={columns}
             rows={data}
             includeActionColumn={true}
@@ -134,7 +129,7 @@ const Users = () => {
         ) : (
           <>
             <DataTable
-              slug="users"
+              slug="categories"
               columns={columns}
               rows={[]}
               includeActionColumn={true}
@@ -147,7 +142,7 @@ const Users = () => {
 
         {isOpen && (
           <AddData
-            slug={'user'}
+            slug={'category'}
             isOpen={isOpen}
             setIsOpen={setIsOpen}
           />
@@ -157,4 +152,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Categories;

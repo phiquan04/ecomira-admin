@@ -22,7 +22,7 @@ export const menu = [
         isLink: true,
         url: '/',
         icon: HiOutlineHome,
-        label: 'homepage',
+        label: 'dashboard',
       },
       {
         isLink: true,
@@ -49,9 +49,9 @@ export const menu = [
       },
       {
         isLink: true,
-        url: '/orders',
+        url: '/categories',
         icon: HiOutlineClipboardDocumentList,
-        label: 'orders',
+        label: 'categories',
       },
       {
         isLink: true,

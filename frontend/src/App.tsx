@@ -13,7 +13,7 @@ import Footer from './components/Footer';
 import Menu from './components/menu/Menu';
 import Error from './pages/Error';
 import Profile from './pages/Profile';
-import Orders from './pages/Orders';
+import Categories from './pages/Categories';
 import Posts from './pages/Posts';
 import Notes from './pages/Notes';
 import Calendar from './pages/Calendar';
@@ -83,10 +83,14 @@ function App() {
           path: '/products/:id',
           element: <Product />,
         },
-        {
-          path: '/orders',
-          element: <Orders />,
+       {
+          path: '/categories',
+          element: <Categories />,
         },
+        // {
+        //   path: '/categories/:id',
+        //   element: <Category />,
+        // },
         {
           path: '/posts',
           element: <Posts />,
