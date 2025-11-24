@@ -323,3 +323,62 @@ export const fetchLogs = async () => {
 
   return response;
 };
+// ADD NEW USER
+export const addUser = async (userData: {
+  fullName: string;
+  email: string;
+  phone: string;
+  userType: string;
+  isVerified: boolean;
+}) => {
+  const response = await axios
+    .post(`${baseURL}/api/v1/users`, userData)
+    .then((res) => {
+      console.log('axios post user:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error adding user:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// UPDATE USER
+export const updateUser = async (id: string, userData: {
+  fullName: string;
+  email: string;
+  phone: string;
+  userType: string;
+  isVerified: boolean;
+}) => {
+  const response = await axios
+    .put(`${baseURL}/api/v1/users/${id}`, userData)
+    .then((res) => {
+      console.log('axios update user:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error updating user:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// DELETE USER
+export const deleteUser = async (id: string) => {
+  const response = await axios
+    .delete(`${baseURL}/api/v1/users/${id}`)
+    .then((res) => {
+      console.log('axios delete user:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error deleting user:', err);
+      throw err;
+    });
+
+  return response;
+};

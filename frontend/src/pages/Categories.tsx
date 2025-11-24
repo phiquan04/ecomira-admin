@@ -5,6 +5,7 @@ import { fetchCategories } from '../api/ApiCollection';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import AddData from '../components/AddData';
+import IconRenderer from '../components/IconRenderer';
 
 const Categories = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -29,7 +30,12 @@ const Categories = () => {
       renderCell: (params) => {
         return (
           <div className="flex gap-3 items-center">
-            <span className="text-2xl">{params.row.icon}</span>
+            <IconRenderer 
+              iconName={params.row.icon} 
+              size={24}
+              color={params.row.color} // Truyền màu từ database
+              withBackground={true} // Thêm nền
+            />
           </div>
         );
       },
@@ -37,16 +43,16 @@ const Categories = () => {
     {
       field: 'color',
       headerName: 'Color',
-      minWidth: 100,
+      minWidth: 120,
       flex: 1,
       renderCell: (params) => {
         return (
           <div className="flex gap-3 items-center">
             <div 
-              className="w-6 h-6 rounded-full"
+              className="w-6 h-6 rounded-full border border-gray-300"
               style={{ backgroundColor: params.row.color }}
             ></div>
-            <span>{params.row.color}</span>
+            <span className="text-sm font-mono">{params.row.color}</span>
           </div>
         );
       },
@@ -63,13 +69,23 @@ const Categories = () => {
       width: 80,
       type: 'boolean',
       flex: 1,
+      renderCell: (params) => {
+        return (
+          <span className={params.value ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
+            {params.value ? '✓' : '✗'}
+          </span>
+        );
+      },
     },
     {
       field: 'createdAt',
       headerName: 'Created At',
-      minWidth: 100,
+      minWidth: 120,
       type: 'string',
       flex: 1,
+      valueFormatter: (params) => {
+        return new Date(params.value).toLocaleDateString('vi-VN');
+      },
     },
   ];
 
