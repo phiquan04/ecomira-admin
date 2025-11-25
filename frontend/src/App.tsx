@@ -30,12 +30,6 @@ import CategoryEdit from './pages/CategoryEdit';
 
 // Component bảo vệ route
 const ProtectedLayout = () => {
-  const isAuthenticated = localStorage.getItem('authToken'); // Hoặc từ context/state
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
   return (
     <div
       id="rootContainer"
@@ -60,14 +54,51 @@ const ProtectedLayout = () => {
 };
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    // Kiểm tra token khi component mount
+    const checkAuth = () => {
+      const token = localStorage.getItem('authToken');
+      console.log('App - Checking auth token:', !!token);
+      setIsAuthenticated(!!token);
+    };
+
+    checkAuth();
+  }, []);
+
+  // Lắng nghe sự thay đổi của authentication
+  useEffect(() => {
+    const handleAuthChange = () => {
+      console.log('App - Auth change event received');
+      const token = localStorage.getItem('authToken');
+      setIsAuthenticated(!!token);
+    };
+
+    window.addEventListener('storage', handleAuthChange);
+    window.addEventListener('authChange', handleAuthChange);
+
+    return () => {
+      window.removeEventListener('storage', handleAuthChange);
+      window.removeEventListener('authChange', handleAuthChange);
+    };
+  }, []);
+
+  // Hiển thị loading trong khi kiểm tra
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
+  }
+
+  console.log('App - Authentication state:', isAuthenticated);
+  
   const router = createBrowserRouter([
     {
-      path: '/login',
-      element: <Login />,
-    },
-    {
       path: '/',
-      element: <ProtectedLayout />,
+      element: isAuthenticated ? <ProtectedLayout /> : <Navigate to="/login" replace />,
       children: [
         {
           path: '/',
@@ -131,6 +162,14 @@ function App() {
         },
       ],
       errorElement: <Error />,
+    },
+    {
+      path: '/login',
+      element: !isAuthenticated ? <Login /> : <Navigate to="/" replace />,
+    },
+    {
+      path: '*',
+      element: <Navigate to={isAuthenticated ? '/' : '/login'} replace />,
     },
   ]);
 

@@ -146,6 +146,7 @@ const AddData: React.FC<AddDataProps> = ({ slug, isOpen, setIsOpen, editData }) 
                 >
                   <option value="seller">Seller</option>
                   <option value="customer">Customer</option>
+                  <option value="admin">Admin</option>
                 </select>
               </div>
 

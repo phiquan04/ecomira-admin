@@ -155,6 +155,18 @@ router.put('/:id', async (req, res) => {
   }
 
   try {
+    // First, get the current user data to preserve existing user_type if not provided
+    const currentUser = await pool.query(
+      'SELECT user_type FROM users WHERE id = $1',
+      [id]
+    );
+
+    if (currentUser.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const currentUserType = currentUser.rows[0].user_type;
+
     let query: string;
     let params: any[];
 
@@ -176,7 +188,16 @@ router.put('/:id', async (req, res) => {
           created_at as "createdAt",
           updated_at as "updatedAt"
       `;
-      params = [fullName, email, phone || null, userType || 'customer', isVerified || false, passwordHash, id];
+      // Use provided userType or fallback to current user_type
+      params = [
+        fullName, 
+        email, 
+        phone || null, 
+        userType !== undefined ? userType : currentUserType, // Fix: preserve current user_type if not provided
+        isVerified || false, 
+        passwordHash, 
+        id
+      ];
     } else {
       query = `
         UPDATE users 
@@ -192,7 +213,15 @@ router.put('/:id', async (req, res) => {
           created_at as "createdAt",
           updated_at as "updatedAt"
       `;
-      params = [fullName, email, phone || null, userType || 'customer', isVerified || false, id];
+      // Use provided userType or fallback to current user_type
+      params = [
+        fullName, 
+        email, 
+        phone || null, 
+        userType !== undefined ? userType : currentUserType, // Fix: preserve current user_type if not provided
+        isVerified || false, 
+        id
+      ];
     }
 
     const result = await pool.query(query, params);
@@ -227,12 +256,24 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// PATCH - PARTIAL UPDATE user (optional, for specific fields)
+// PATCH - PARTIAL UPDATE user
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;
   const { fullName, email, phone, userType, isVerified, password } = req.body;
 
   try {
+    // First, get the current user data to preserve existing values if not provided
+    const currentUser = await pool.query(
+      'SELECT user_type FROM users WHERE id = $1',
+      [id]
+    );
+
+    if (currentUser.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const currentUserType = currentUser.rows[0].user_type;
+
     // Build dynamic update query based on provided fields
     const updateFields: string[] = [];
     const values: any[] = [];
@@ -259,6 +300,11 @@ router.patch('/:id', async (req, res) => {
     if (userType !== undefined) {
       updateFields.push(`user_type = $${paramCount}`);
       values.push(userType);
+      paramCount++;
+    } else {
+      // If userType is not provided, preserve the current value
+      updateFields.push(`user_type = $${paramCount}`);
+      values.push(currentUserType);
       paramCount++;
     }
 

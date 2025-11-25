@@ -1,9 +1,8 @@
 "use client"
 
-import type React from "react" // Added useState import
+import type React from "react"
 import { useState } from "react"
 import ChangeThemes from "../components/ChangesThemes"
-import { DiReact } from "react-icons/di"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import toast from "react-hot-toast"
@@ -15,42 +14,51 @@ const Login = () => {
   const navigate = useNavigate()
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+  e.preventDefault()
+  setLoading(true)
 
-    try {
-      // Gọi API login từ backend
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/auth/login`,
-        {
-          email,
-          password,
-        },
-      )
+  try {
+    // Clear any existing auth data trước khi login mới
+    localStorage.removeItem("authToken")
+    localStorage.removeItem("user")
+    
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/auth/login`,
+      {
+        email,
+        password,
+      },
+    )
 
-      const { user, token } = response.data
+    const { user, token } = response.data
 
-      // Kiểm tra usertype
-      if (user.usertype !== "admin") {
-        toast.error(`Tài khoản ${user.usertype} không có quyền truy cập admin panel`)
-        setLoading(false)
-        return
-      }
-
-      // Lưu token và thông tin user
-      localStorage.setItem("authToken", token)
-      localStorage.setItem("user", JSON.stringify(user))
-
-      toast.success("Đăng nhập thành công!")
-      navigate("/")
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.message || "Đăng nhập thất bại"
-      toast.error(errorMsg)
-    } finally {
+    if (user.user_type !== "admin") {
+      toast.error(`Tài khoản ${user.user_type} không có quyền truy cập admin panel`)
       setLoading(false)
+      return
     }
-  }
 
+    // Lưu token và thông tin user
+    localStorage.setItem("authToken", token)
+    localStorage.setItem("user", JSON.stringify(user))
+
+    toast.success("Đăng nhập thành công!")
+    
+    // Trigger auth change event
+    window.dispatchEvent(new CustomEvent('authChange'));
+    
+    // Chuyển hướng sau 100ms để đảm bảo state được cập nhật
+    setTimeout(() => {
+      navigate("/", { replace: true })
+    }, 100)
+    
+  } catch (error: any) {
+    const errorMsg = error.response?.data?.message || "Đăng nhập thất bại"
+    toast.error(errorMsg)
+  } finally {
+    setLoading(false)
+  }
+}
   return (
     // screen
     <div className="w-full p-0 m-0">

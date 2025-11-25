@@ -20,93 +20,99 @@ const Category = () => {
       toast.loading("Loading...", { id: "promiseRead" })
     }
     if (isError) {
-      toast.error("Error while getting the data!", {
-        id: "promiseRead",
-      })
+      toast.error("Error while getting the data!", { id: "promiseRead" })
     }
     if (isSuccess) {
-      toast.success("Read the data successfully!", {
-        id: "promiseRead",
-      })
+      toast.success("Read the data successfully!", { id: "promiseRead" })
     }
   }, [isError, isLoading, isSuccess])
 
   return (
-    <div className="w-full p-0 m-0">
-      <div className="w-full grid xl:grid-cols-3 gap-6 mt-5 xl:mt-0">
-        {/* Main Content */}
-        <div className="xl:col-span-2 flex flex-col items-start gap-6">
-          {/* Hero Card with Icon */}
-          <div className="w-full bg-gradient-to-br from-base-100 to-base-50 dark:from-base-200 dark:to-base-300 rounded-2xl p-8 shadow-lg border border-base-200 dark:border-base-300">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              {/* Icon Section */}
-              {isLoading ? (
-                <div className="w-24 xl:w-32 h-24 xl:h-32 rounded-2xl skeleton dark:bg-neutral flex-shrink-0"></div>
-              ) : isSuccess ? (
-                <div
-                  className="p-6 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md"
-                  style={{
-                    backgroundColor: data.color + "20",
-                    color: data.color,
-                  }}
-                >
-                  <IconRenderer iconName={data.icon} size={80} className="text-6xl xl:text-7xl" />
-                </div>
-              ) : null}
+    <div className="w-full min-h-screen p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="max-w-6xl mx-auto grid xl:grid-cols-3 gap-6">
+        {/* Main Content - 2 columns */}
+        <div className="xl:col-span-2 flex flex-col gap-6">
+          {/* Hero Card */}
+          <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
 
-              {/* Title Section */}
-              <div className="flex flex-col items-start gap-3">
+            <div className="p-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                 {isLoading ? (
-                  <div className="w-56 h-10 skeleton dark:bg-neutral rounded-lg"></div>
+                  <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 animate-pulse"></div>
                 ) : isSuccess ? (
-                  <h1 className="font-bold text-3xl xl:text-4xl dark:text-white text-base-content">{data.name}</h1>
+                  <div
+                    className="p-6 rounded-2xl shadow-lg"
+                    style={{
+                      backgroundColor: data.color + "15",
+                      color: data.color,
+                    }}
+                  >
+                    <IconRenderer iconName={data.icon} size={64} className="text-5xl" />
+                  </div>
                 ) : null}
-                <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                  Category Details
-                </span>
+
+                <div className="flex flex-col gap-2">
+                  {isLoading ? (
+                    <div className="w-48 h-10 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg animate-pulse"></div>
+                  ) : isSuccess ? (
+                    <>
+                      <h1 className="font-bold text-2xl xl:text-3xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        {data.name}
+                      </h1>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-100 to-purple-100 text-indigo-700 uppercase tracking-wide w-fit">
+                        Category Details
+                      </span>
+                    </>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Details Card */}
-          <div className="w-full bg-base-100 dark:bg-base-200 rounded-2xl p-8 shadow-md border border-base-200 dark:border-base-300">
-            {isLoading ? (
-              <div className="space-y-4">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-6 skeleton dark:bg-neutral rounded-lg"></div>
-                ))}
-              </div>
-            ) : isSuccess ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Left Column */}
-                <div className="space-y-6">
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      Name
-                    </label>
-                    <p className="text-lg font-semibold text-base-content dark:text-white mt-2">{data.name}</p>
+          <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+
+            <div className="p-8">
+              {isLoading ? (
+                <div className="space-y-4">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl animate-pulse"
+                    ></div>
+                  ))}
+                </div>
+              ) : isSuccess ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                    <span className="text-xs font-semibold text-indigo-500 uppercase tracking-wide">Name</span>
+                    <p className="text-gray-800 font-medium mt-1">{data.name}</p>
                   </div>
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      Icon
-                    </label>
-                    <div className="flex items-center gap-3 mt-2">
-                      <IconRenderer iconName={data.icon} size={24} color={data.color} />
-                      <span className="text-sm font-mono font-medium text-base-content dark:text-white">
-                        {data.icon}
-                      </span>
+                  <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                    <span className="text-xs font-semibold text-indigo-500 uppercase tracking-wide">Icon</span>
+                    <div className="flex items-center gap-3 mt-1">
+                      <IconRenderer iconName={data.icon} size={20} color={data.color} />
+                      <span className="text-sm font-mono text-gray-700">{data.icon}</span>
                     </div>
                   </div>
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      Status
-                    </label>
-                    <div className="mt-2">
+                  <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
+                    <span className="text-xs font-semibold text-purple-500 uppercase tracking-wide">Color</span>
+                    <div className="flex items-center gap-3 mt-1">
+                      <div
+                        className="w-8 h-8 rounded-lg shadow-sm border border-gray-200"
+                        style={{ backgroundColor: data.color }}
+                      ></div>
+                      <span className="text-sm font-mono text-gray-700">{data.color}</span>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
+                    <span className="text-xs font-semibold text-purple-500 uppercase tracking-wide">Status</span>
+                    <p className="mt-1">
                       <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold gap-2 ${
-                          data.isActive
-                            ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200"
-                            : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200"
+                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                          data.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                         }`}
                       >
                         <span
@@ -114,31 +120,11 @@ const Category = () => {
                         ></span>
                         {data.isActive ? "Active" : "Inactive"}
                       </span>
-                    </div>
+                    </p>
                   </div>
-                </div>
-
-                {/* Right Column */}
-                <div className="space-y-6">
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      Color
-                    </label>
-                    <div className="flex items-center gap-3 mt-2">
-                      <div
-                        className="w-12 h-12 rounded-lg border-2 border-base-300 shadow-sm"
-                        style={{ backgroundColor: data.color }}
-                      ></div>
-                      <span className="text-sm font-mono font-medium text-base-content dark:text-white">
-                        {data.color}
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                      Created At
-                    </label>
-                    <p className="text-lg font-semibold text-base-content dark:text-white mt-2">
+                  <div className="col-span-full p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                    <span className="text-xs font-semibold text-pink-500 uppercase tracking-wide">Created At</span>
+                    <p className="text-gray-800 font-medium mt-1">
                       {new Date(data.createdAt).toLocaleDateString("vi-VN", {
                         year: "numeric",
                         month: "long",
@@ -147,55 +133,57 @@ const Category = () => {
                     </p>
                   </div>
                 </div>
-              </div>
-            ) : null}
+              ) : null}
+            </div>
           </div>
 
           {/* Description Card */}
           {isSuccess && (
-            <div className="w-full bg-base-100 dark:bg-base-200 rounded-2xl p-8 shadow-md border border-base-200 dark:border-base-300">
-              <label className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                Description
-              </label>
-              <p className="text-base text-base-content dark:text-white mt-3 leading-relaxed">
-                {data.description || "No description available"}
-              </p>
+            <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+              <div className="p-8">
+                <span className="text-xs font-semibold text-indigo-500 uppercase tracking-wide">Description</span>
+                <p className="text-gray-700 mt-3 leading-relaxed">{data.description || "No description available"}</p>
+              </div>
             </div>
           )}
         </div>
 
         {/* Sidebar - Statistics */}
-        <div className="flex flex-col gap-6">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800 shadow-md hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-bold uppercase tracking-wide text-blue-600 dark:text-blue-400">
-                Total Products
-              </span>
-              <span className="text-2xl">📦</span>
+        <div className="flex flex-col gap-4">
+          <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500"></div>
+            <div className="p-6 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-b-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-semibold uppercase tracking-wide opacity-90">Total Products</span>
+                <span className="text-2xl">📦</span>
+              </div>
+              <p className="text-4xl font-bold">0</p>
+              <p className="text-sm opacity-80 mt-2">No products yet</p>
             </div>
-            <p className="text-4xl font-bold text-blue-700 dark:text-blue-200">0</p>
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">No products yet</p>
           </div>
 
-          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800 shadow-md hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
-                Active Products
-              </span>
-              <span className="text-2xl">✨</span>
+          <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+            <div className="p-6 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-b-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-semibold uppercase tracking-wide opacity-90">Active Products</span>
+                <span className="text-2xl">✨</span>
+              </div>
+              <p className="text-4xl font-bold">0</p>
+              <p className="text-sm opacity-80 mt-2">Waiting for products</p>
             </div>
-            <p className="text-4xl font-bold text-emerald-700 dark:text-emerald-200">0</p>
-            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2">Waiting for products</p>
           </div>
 
-          <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-900/20 rounded-2xl p-6 border border-amber-200 dark:border-amber-800 shadow-md hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400">
-                Category ID
-              </span>
-              <span className="text-2xl">🏷️</span>
+          <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+            <div className="p-6 bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-b-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-semibold uppercase tracking-wide opacity-90">Category ID</span>
+                <span className="text-2xl">🏷️</span>
+              </div>
+              <p className="text-2xl font-bold font-mono">{id}</p>
             </div>
-            <p className="text-2xl font-bold text-amber-700 dark:text-amber-200 font-mono">{id}</p>
           </div>
         </div>
       </div>

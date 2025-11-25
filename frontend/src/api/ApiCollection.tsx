@@ -425,3 +425,62 @@ export const deleteUser = async (id: string) => {
 
   return response;
 };
+
+// GET USER PROFILE
+export const fetchUserProfile = async (id: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/users/${id}`)
+    .then((res) => {
+      console.log('axios get user profile:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching user profile:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// UPDATE USER PROFILE
+export const updateUserProfile = async (id: string, userData: {
+  fullName: string;
+  email: string;
+  phone: string;
+  user_type: string;
+}) => {
+  const response = await axios
+    .put(`${baseURL}/api/v1/users/${id}`, userData)
+    .then((res) => {
+      console.log('axios update user profile:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error updating user profile:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// CHANGE PASSWORD
+export const changePassword = async (id: string, passwordData: {
+  currentPassword: string;
+  newPassword: string;
+}) => {
+  const response = await axios
+    .post(`${baseURL}/api/auth/change-password`, {
+      userId: id,
+      ...passwordData
+    })
+    .then((res) => {
+      console.log('axios change password:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error changing password:', err);
+      throw err;
+    });
+
+  return response;
+};

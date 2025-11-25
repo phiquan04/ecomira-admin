@@ -124,7 +124,9 @@ const Categories = () => {
       <div className="w-full flex flex-col items-stretch gap-6">
         <div className="w-full flex justify-between items-center mb-2">
           <div className="flex gap-2 justify-start flex-col items-start">
-            <h2 className="font-bold text-3xl xl:text-4xl text-base-content dark:text-neutral-200">Categories</h2>
+            <h2 className="font-bold text-3xl xl:text-4xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Categories
+            </h2>
             {data && data.length > 0 && (
               <span className="text-gray-500 dark:text-gray-400 font-medium text-sm">
                 {data.length} {data.length === 1 ? "Category" : "Categories"} Found
@@ -133,16 +135,17 @@ const Categories = () => {
           </div>
           <button
             onClick={() => setIsOpen(true)}
-            className={`btn btn-primary gap-2 shadow-lg hover:shadow-xl transition-all ${
+            className={`btn gap-2 shadow-lg hover:shadow-xl transition-all text-white font-semibold ${
               isLoading ? "btn-disabled" : ""
             }`}
+            style={{ background: "linear-gradient(135deg, #5B7FFF 0%, #A855F7 100%)" }}
           >
             <span className="text-lg">+</span>
             Add New Category
           </button>
         </div>
 
-        <div className="w-full bg-base-100 dark:bg-base-200 rounded-xl shadow-md overflow-hidden border border-base-200 dark:border-base-300">
+        <div className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
           {isLoading ? (
             <DataTable slug="categories" columns={columns} rows={[]} includeActionColumn={true} />
           ) : isSuccess ? (
