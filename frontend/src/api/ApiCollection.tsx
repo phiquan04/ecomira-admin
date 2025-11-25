@@ -50,7 +50,6 @@ export const fetchAUser = async (id: string) => {
   return response;
 };
 
-// GET ALL CATEGORIES
 export const fetchCategories = async () => {
   const response = await axios
     .get(`${baseURL}/api/v1/categories`)
@@ -82,16 +81,60 @@ export const fetchSingleCategory = async (id: string) => {
   return response;
 };
 
-// GET TOTAL PRODUCTS
-export const fetchTotalProducts = async () => {
+// ADD NEW CATEGORY
+export const addCategory = async (categoryData: {
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+  isActive: boolean;
+}) => {
   const response = await axios
-    .get('https://react-admin-ui-v1-api.vercel.app/totalproducts')
+    .post(`${baseURL}/api/v1/categories`, categoryData)
     .then((res) => {
-      console.log('axios get:', res.data);
+      console.log('axios post category:', res.data);
       return res.data;
     })
     .catch((err) => {
-      console.log(err);
+      console.log('Error adding category:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// UPDATE CATEGORY
+export const updateCategory = async (id: string, categoryData: {
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+  isActive: boolean;
+}) => {
+  const response = await axios
+    .put(`${baseURL}/api/v1/categories/${id}`, categoryData)
+    .then((res) => {
+      console.log('axios update category:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error updating category:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// DELETE CATEGORY
+export const deleteCategory = async (id: string) => {
+  const response = await axios
+    .delete(`${baseURL}/api/v1/categories/${id}`)
+    .then((res) => {
+      console.log('axios delete category:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error deleting category:', err);
       throw err;
     });
 
@@ -146,21 +189,52 @@ export const fetchTotalSource = async () => {
   return response;
 };
 
-// GET TOTAL VISIT
-export const fetchTotalVisit = async () => {
+export const fetchTotalProducts = async () => {
   const response = await axios
-    .get('https://react-admin-ui-v1-api.vercel.app/totalvisit')
+    .get(`${baseURL}/api/v1/products`)
     .then((res) => {
-      console.log('axios get:', res.data);
+      console.log('axios get products:', res.data);
       return res.data;
     })
     .catch((err) => {
-      console.log(err);
+      console.log('Error fetching products:', err);
       throw err;
     });
 
   return response;
 };
+
+// GET SINGLE PRODUCT
+export const fetchSingleProduct = async (id: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/products/${id}`)
+    .then((res) => {
+      console.log('axios get single product:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching single product:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET TOTAL VISIT
+// export const fetchTotalVisit = async () => {
+//   const response = await axios
+//     .get('https://react-admin-ui-v1-api.vercel.app/totalvisit')
+//     .then((res) => {
+//       console.log('axios get:', res.data);
+//       return res.data;
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       throw err;
+//     });
+
+//   return response;
+// };
 
 // GET TOTAL REVENUE BY PRODUCTS
 export const fetchTotalRevenueByProducts = async () => {
@@ -228,37 +302,6 @@ export const fetchSingleUser = async (id: string) => {
   return response;
 };
 
-// GET ALL PRODUCTS
-export const fetchProducts = async () => {
-  const response = await axios
-    .get('https://react-admin-ui-v1-api.vercel.app/products')
-    .then((res) => {
-      console.log('axios get:', res.data);
-      return res.data;
-    })
-    .catch((err) => {
-      console.log(err);
-      throw err;
-    });
-
-  return response;
-};
-
-// GET SINGLE PRODUCT
-export const fetchSingleProduct = async (id: string) => {
-  const response = await axios
-    .get(`https://react-admin-ui-v1-api.vercel.app/products/${id}`)
-    .then((res) => {
-      console.log('axios get:', res.data);
-      return res.data;
-    })
-    .catch((err) => {
-      console.log(err);
-      throw err;
-    });
-
-  return response;
-};
 
 // GET ALL ORDERS
 export const fetchOrders = async () => {

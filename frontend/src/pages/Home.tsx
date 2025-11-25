@@ -16,7 +16,6 @@ import {
   fetchTotalRevenueByProducts,
   fetchTotalSource,
   fetchTotalUsers,
-  fetchTotalVisit,
 } from '../api/ApiCollection';
 
 const Home = () => {
@@ -50,10 +49,6 @@ const Home = () => {
     queryFn: fetchTotalRevenueByProducts,
   });
 
-  const queryGetTotalVisit = useQuery({
-    queryKey: ['totalvisit'],
-    queryFn: fetchTotalVisit,
-  });
 
   const queryGetTotalProfit = useQuery({
     queryKey: ['totalprofit'],
@@ -126,7 +121,7 @@ const Home = () => {
             isSuccess={queryGetTotalRevenueByProducts.isSuccess}
           />
         </div>
-        <div className="box col-span-full sm:col-span-1 xl:col-span-1 3xl:row-span-2">
+        {/* <div className="box col-span-full sm:col-span-1 xl:col-span-1 3xl:row-span-2">
           <ChartBox
             chartType={'bar'}
             title="Total Visit"
@@ -134,7 +129,7 @@ const Home = () => {
             isLoading={queryGetTotalVisit.isLoading}
             isSuccess={queryGetTotalVisit.isSuccess}
           />
-        </div>
+        </div> */}
         <div className="box col-span-full sm:col-span-1 xl:col-span-1 3xl:row-span-2">
           <ChartBox
             chartType={'bar'}

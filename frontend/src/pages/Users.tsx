@@ -14,7 +14,7 @@ const Users = () => {
   });
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 90 },
+    { field: 'id', headerName: 'ID', width: 40 },
     {
       field: 'firstName',
       headerName: 'Name',
@@ -70,10 +70,10 @@ const Users = () => {
     //     `${params.row.firstName || ''} ${params.row.lastName || ''}`,
     // },
     {
-      field: 'verified',
-      headerName: 'Verified',
+      field: 'userType',
+      headerName: 'userType',
       width: 80,
-      type: 'boolean',
+      type: '',
       flex: 1,
     },
   ];
