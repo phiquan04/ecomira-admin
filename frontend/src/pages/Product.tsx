@@ -1,263 +1,122 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import toast from 'react-hot-toast';
-import { useQuery } from '@tanstack/react-query';
-import { fetchSingleProduct } from '../api/ApiCollection';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
+"use client"
+
+import React from "react"
+import { useParams } from "react-router-dom"
+import toast from "react-hot-toast"
+import { useQuery } from "@tanstack/react-query"
+import { fetchSingleProduct } from "../api/ApiCollection"
 
 const Product = () => {
-  const tempEntries: number[] = [1, 2, 3, 4, 5];
-  const dataLine = [
-    {
-      name: 'Jan',
-      purchased: 4000,
-      wishlisted: 2400,
-      amt: 2400,
-    },
-    {
-      name: 'Feb',
-      purchased: 3000,
-      wishlisted: 1398,
-      amt: 2210,
-    },
-    {
-      name: 'Mar',
-      purchased: 2000,
-      wishlisted: 9800,
-      amt: 2290,
-    },
-    {
-      name: 'Apr',
-      purchased: 2780,
-      wishlisted: 3908,
-      amt: 2000,
-    },
-    {
-      name: 'May',
-      purchased: 1890,
-      wishlisted: 4800,
-      amt: 2181,
-    },
-    {
-      name: 'Jun',
-      purchased: 2390,
-      wishlisted: 3800,
-      amt: 2500,
-    },
-    {
-      name: 'Jul',
-      purchased: 3490,
-      wishlisted: 4300,
-      amt: 2100,
-    },
-  ];
-
-  // const [user, setUser] = React.useState();
-  const { id } = useParams();
-  // const navigate = useNavigate();
+  const { id } = useParams()
 
   const { isLoading, isError, data, isSuccess } = useQuery({
-    queryKey: ['user', id],
-    queryFn: () => fetchSingleProduct(id || ''),
-  });
+    queryKey: ["product", id],
+    queryFn: () => fetchSingleProduct(id || ""),
+  })
 
   React.useEffect(() => {
     if (isLoading) {
-      toast.loading('Loading...', { id: 'promiseRead' });
+      toast.loading("Loading...", { id: "promiseRead" })
     }
     if (isError) {
-      toast.error('Error while getting the data!', {
-        id: 'promiseRead',
-      });
+      toast.error("Error while getting the data!", { id: "promiseRead" })
     }
     if (isSuccess) {
-      toast.success('Read the data successfully!', {
-        id: 'promiseRead',
-      });
+      toast.success("Read the data successfully!", { id: "promiseRead" })
     }
-  }, [isError, isLoading, isSuccess]);
+  }, [isError, isLoading, isSuccess])
 
   return (
-    // screen
-    <div id="singleProduct" className="w-full p-0 m-0">
-      {/* container */}
-      <div className="w-full grid xl:grid-cols-2 gap-10 mt-5 xl:mt-0">
-        {/* column 1 */}
-        <div className="w-full flex flex-col items-start gap-10">
-          {/* product block */}
-          <div className="w-full flex flex-col items-start gap-5">
-            {/* photo block */}
-            <div className="w-full flex items-center gap-3">
-              <div className="flex items-center gap-3 xl:gap-8 xl:mb-4">
-                <div className="">
-                  {isLoading ? (
-                    <div className="w-24 xl:w-36 h-24 xl:h-36 skeleton dark:bg-neutral"></div>
-                  ) : isSuccess ? (
-                    <div className="w-24 xl:w-36">
-                      <img
-                        src={data.img}
-                        alt="avatar"
-                        className="w-full h-auto object-cover"
-                      />
-                    </div>
-                  ) : (
-                    ''
-                  )}
+    <div className="w-full min-h-screen p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="max-w-5xl mx-auto">
+        {/* Main Card */}
+        <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+
+          <div className="p-8">
+            {/* Product Header */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8 pb-8 border-b border-gray-100">
+              {isLoading ? (
+                <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 animate-pulse"></div>
+              ) : isSuccess ? (
+                <div className="w-32 h-32 rounded-2xl overflow-hidden ring-4 ring-indigo-100 shadow-lg">
+                  <img src={data.imageUrl || "/noimage.png"} alt="product" className="w-full h-full object-cover" />
                 </div>
-                <div className="flex flex-col items-start gap-1">
-                  {isLoading ? (
-                    <div className="w-[200px] h-[36px] skeleton dark:bg-neutral"></div>
-                  ) : isSuccess ? (
-                    <h3 className="font-semibold text-xl xl:text-3xl dark:text-white">
-                      {data.title}
-                    </h3>
-                  ) : (
-                    <div className="w-[200px] h-[36px] skeleton dark:bg-neutral"></div>
-                  )}
-                  <span className="font-normal text-base">
-                    Exclusive
-                  </span>
-                </div>
+              ) : null}
+
+              <div className="flex flex-col gap-2">
+                {isLoading ? (
+                  <div className="w-48 h-8 bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg animate-pulse"></div>
+                ) : isSuccess ? (
+                  <>
+                    <h1 className="font-bold text-2xl xl:text-3xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      {data.name}
+                    </h1>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-indigo-700 w-fit">
+                      Product
+                    </span>
+                  </>
+                ) : null}
               </div>
             </div>
-            {/* detail block */}
-            <div className="w-full flex gap-8">
-              {isLoading ? (
-                <div className="w-full xl:w-[50%} h-52 skeleton dark:bg-neutral"></div>
-              ) : isSuccess ? (
-                <div className="w-full grid grid-cols-3 xl:flex gap-5 xl:gap-8">
-                  {/* column 1 */}
-                  <div className="col-span-1 flex flex-col items-start gap-3 xl:gap-5">
-                    <span>Product ID</span>
-                    <span>Color</span>
-                    <span>Price</span>
-                    <span>Producer</span>
-                    <span>Status</span>
-                  </div>
-                  {/* column 2 */}
-                  <div className="col-span-2 flex flex-col items-start gap-3 xl:gap-5">
-                    <span className="font-semibold">{data.id}</span>
-                    <span className="font-semibold">
-                      {data.color}
-                    </span>
-                    <span className="font-semibold">
-                      {data.price}
-                    </span>
-                    <span className="font-semibold">
-                      {data.producer}
-                    </span>
-                    <span className="font-semibold">
-                      {data.inStock ? 'In stock' : 'Out of stock'}
-                    </span>
-                  </div>
+
+            {/* Product Details */}
+            {isLoading ? (
+              <div className="space-y-4">
+                {[...Array(7)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-12 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl animate-pulse"
+                  ></div>
+                ))}
+              </div>
+            ) : isSuccess ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                  <span className="text-xs font-semibold text-indigo-500 uppercase tracking-wide">Name</span>
+                  <p className="text-gray-800 font-medium mt-1">{data.name}</p>
                 </div>
-              ) : (
-                <div className="w-full xl:w-[50%} h-52 skeleton dark:bg-neutral"></div>
-              )}
-            </div>
+                <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                  <span className="text-xs font-semibold text-indigo-500 uppercase tracking-wide">Price</span>
+                  <p className="text-gray-800 font-bold mt-1 text-lg">${data.price}</p>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
+                  <span className="text-xs font-semibold text-purple-500 uppercase tracking-wide">Stock Quantity</span>
+                  <p className="text-gray-800 font-medium mt-1">{data.stockQuantity}</p>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
+                  <span className="text-xs font-semibold text-purple-500 uppercase tracking-wide">Category ID</span>
+                  <p className="text-gray-800 font-medium mt-1">{data.categoryId}</p>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                  <span className="text-xs font-semibold text-pink-500 uppercase tracking-wide">Status</span>
+                  <p className="mt-1">
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                        data.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {data.isActive ? "✓ Active" : "✗ Inactive"}
+                    </span>
+                  </p>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                  <span className="text-xs font-semibold text-pink-500 uppercase tracking-wide">Created At</span>
+                  <p className="text-gray-800 font-medium mt-1">
+                    {new Date(data.createdAt).toLocaleDateString("vi-VN")}
+                  </p>
+                </div>
+                <div className="col-span-full p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl">
+                  <span className="text-xs font-semibold text-indigo-500 uppercase tracking-wide">Description</span>
+                  <p className="text-gray-700 mt-2 leading-relaxed">{data.description || "No description available"}</p>
+                </div>
+              </div>
+            ) : null}
           </div>
-          {/* divider */}
-          <div className="w-full h-[2px] bg-base-300 dark:bg-slate-700"></div>
-          {/* chart */}
-          {isLoading ? (
-            <div className="w-full min-h-[300px] skeleton dark:bg-neutral"></div>
-          ) : isSuccess ? (
-            <div className="w-full min-h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={dataLine}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="purchased"
-                    stroke="#8884d8"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="wishlisted"
-                    stroke="#82ca9d"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div className="w-full min-h-[300px] skeleton dark:bg-neutral"></div>
-          )}
-        </div>
-        {/* column 2 */}
-        <div
-          id="activities"
-          className="w-full flex flex-col items-start gap-5"
-        >
-          <h2 className="text-2xl font-semibold dark:text-white">
-            Latest Activities
-          </h2>
-          {isLoading &&
-            tempEntries.map((index: number) => (
-              <div
-                className="w-full h-20 skeleton dark:bg-neutral"
-                key={index}
-              ></div>
-            ))}
-          {isSuccess && (
-            <ul>
-              <li>
-                <div className="ml-[1px] relative p-4 bg-base-200 dark:bg-neutral dark:text-neutral-50 min-w-[85vw] xl:min-w-[480px] flex flex-col items-start gap-3">
-                  <span>Frans AHW purchased {data.title}</span>
-                  <span className="text-xs">3 days ago</span>
-                </div>
-              </li>
-              <li>
-                <div className="ml-[1px] relative p-4 bg-base-200 dark:bg-neutral dark:text-neutral-50 min-w-[85vw] xl:min-w-[480px] flex flex-col items-start gap-3">
-                  <span>
-                    Kurt Cobain added {data.title} into wishlist
-                  </span>
-                  <span className="text-xs">1 week ago</span>
-                </div>
-              </li>
-              <li>
-                <div className="ml-[1px] relative p-4 bg-base-200 dark:bg-neutral dark:text-neutral-50 min-w-[85vw] xl:min-w-[480px] flex flex-col items-start gap-3">
-                  <span>Mary Jane purchased {data.title}</span>
-                  <span className="text-xs">2 weeks ago</span>
-                </div>
-              </li>
-              <li>
-                <div className="ml-[1px] relative p-4 bg-base-200 dark:bg-neutral dark:text-neutral-50 min-w-[85vw] xl:min-w-[480px] flex flex-col items-start gap-3">
-                  <span>
-                    Jose Rose added {data.title} into wishlist
-                  </span>
-                  <span className="text-xs">3 weeks ago</span>
-                </div>
-              </li>
-              <li>
-                <div className="ml-[1px] relative p-4 bg-base-200 dark:bg-neutral dark:text-neutral-50 min-w-[85vw] xl:min-w-[480px] flex flex-col items-start gap-3">
-                  <span>James Deane purchased {data.title}</span>
-                  <span className="text-xs">1 month ago</span>
-                </div>
-              </li>
-            </ul>
-          )}
-          {isError &&
-            tempEntries.map((index: number) => (
-              <div
-                className="w-full h-20 skeleton dark:bg-neutral"
-                key={index}
-              ></div>
-            ))}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Product;
+export default Product

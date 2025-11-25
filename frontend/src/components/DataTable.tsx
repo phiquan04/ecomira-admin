@@ -1,139 +1,99 @@
 import React from 'react';
-import {
-  DataGrid,
-  GridColDef,
-  //   GridToolbarQuickFilter,
-  GridToolbar,
-  //   GridValueGetterParams,
-} from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';
-import {
-  HiOutlinePencilSquare,
-  HiOutlineEye,
-  HiOutlineTrash,
-} from 'react-icons/hi2';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Link } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { deleteUser, deleteCategory } from '../api/ApiCollection';
 
 interface DataTableProps {
+  slug: string;
   columns: GridColDef[];
   rows: object[];
-  slug: string;
-  includeActionColumn: boolean;
+  includeActionColumn?: boolean;
 }
 
 const DataTable: React.FC<DataTableProps> = ({
+  slug,
   columns,
   rows,
-  slug,
-  includeActionColumn,
+  includeActionColumn = false,
 }) => {
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => {
+      if (slug === 'users') {
+        return deleteUser(id);
+      } else if (slug === 'categories') {
+        return deleteCategory(id);
+      }
+      throw new Error('Invalid slug');
+    },
+    onSuccess: () => {
+      toast.success(`${slug.slice(0, -1)} deleted successfully!`);
+      queryClient.invalidateQueries({ 
+        queryKey: slug === 'users' ? ['allusers'] : ['allcategories'] 
+      });
+    },
+    onError: (error: any) => {
+      toast.error(`Error deleting ${slug.slice(0, -1)}: ${error.response?.data?.error || error.message}`);
+    },
+  });
+
+  const handleDelete = (id: string) => {
+    if (window.confirm(`Are you sure you want to delete this ${slug.slice(0, -1)}?`)) {
+      deleteMutation.mutate(id);
+    }
+  };
 
   const actionColumn: GridColDef = {
     field: 'action',
     headerName: 'Action',
-    minWidth: 200,
-    flex: 1,
+    width: 200,
     renderCell: (params) => {
       return (
-        <div className="flex items-center">
-          {/* <div to={`/${props.slug}/${params.row.id}`}> */}
+        <div className="flex gap-2">
+          <Link to={`/${slug}/${params.row.id}`}>
+            <button className="btn btn-info btn-sm">View</button>
+          </Link>
+          <Link to={`/${slug}/edit/${params.row.id}`}>
+            <button className="btn btn-warning btn-sm">Edit</button>
+          </Link>
           <button
-            onClick={() => {
-              navigate(`/${slug}/${params.row.id}`);
-            }}
-            className="btn btn-square btn-ghost"
+            className="btn btn-error btn-sm"
+            onClick={() => handleDelete(params.row.id)}
+            disabled={deleteMutation.isPending}
           >
-            <HiOutlineEye />
-          </button>
-          <button
-            onClick={() => {
-              toast('Jangan diedit!', {
-                icon: '😠',
-              });
-            }}
-            className="btn btn-square btn-ghost"
-          >
-            <HiOutlinePencilSquare />
-          </button>
-          <button
-            onClick={() => {
-              toast('Jangan dihapus!', {
-                icon: '😠',
-              });
-            }}
-            className="btn btn-square btn-ghost"
-          >
-            <HiOutlineTrash />
+            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
           </button>
         </div>
       );
     },
   };
 
-  if (includeActionColumn === true) {
-    return (
-      <div className="w-full bg-base-100 text-base-content">
-        <DataGrid
-          className="dataGrid p-0 xl:p-3 w-full bg-base-100 text-white"
-          rows={rows}
-          columns={[...columns, actionColumn]}
-          getRowHeight={() => 'auto'}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
+  const columnsWithActions = includeActionColumn
+    ? [...columns, actionColumn]
+    : columns;
+
+  return (
+    <div className="w-full h-[600px]">
+      <DataGrid
+        className="bg-base-100 dark:bg-neutral p-4"
+        rows={rows}
+        columns={columnsWithActions}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 10,
             },
-          }}
-          slots={{ toolbar: GridToolbar }}
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true,
-              quickFilterProps: { debounceMs: 500 },
-            },
-          }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
-          disableColumnFilter
-          disableDensitySelector
-          disableColumnSelector
-        />
-      </div>
-    );
-  } else {
-    return (
-      <div className="w-full bg-base-100 text-base-content">
-        <DataGrid
-          className="dataGrid p-0 xl:p-3 w-full bg-base-100 text-white"
-          rows={rows}
-          columns={[...columns]}
-          getRowHeight={() => 'auto'}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
-            },
-          }}
-          slots={{ toolbar: GridToolbar }}
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true,
-              quickFilterProps: { debounceMs: 500 },
-            },
-          }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
-          disableColumnFilter
-          disableDensitySelector
-          disableColumnSelector
-        />
-      </div>
-    );
-  }
+          },
+        }}
+        pageSizeOptions={[5, 10, 25]}
+        checkboxSelection
+        disableRowSelectionOnClick
+      />
+    </div>
+  );
 };
 
 export default DataTable;

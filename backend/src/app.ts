@@ -2,6 +2,8 @@ import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
+import usersRouter from './api/users';
+import authRouter from './api/login';
 
 import * as middlewares from './middlewares';
 import api from './api';
@@ -13,7 +15,6 @@ const app = express();
 
 app.use(morgan('dev'));
 app.use(helmet());
-app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
@@ -23,9 +24,9 @@ app.get('/', (req, res) => {
     products: '/products',
     products1: '/products/1',
     categories: '/categories',
-    posts: '/posts',
-    notes: '/notes',
-    logs: '/logs',
+    // posts: '/posts',
+    // notes: '/notes',
+    // logs: '/logs',
   };
 
   let htmlResponse =
@@ -40,9 +41,11 @@ app.get('/', (req, res) => {
   res.send(htmlResponse);
 });
 
-
-// ... giữ nguyên các route khác
-
+app.use(cors({
+  origin: process.env.VITE_DEV_ORIGIN || '*'
+}));
+app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
 app.use('/api/v1', api);
 
 app.use(middlewares.notFound);

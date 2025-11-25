@@ -1,337 +1,284 @@
-import React, { ChangeEvent, FormEvent } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { HiOutlineXMark } from 'react-icons/hi2';
+import { addUser, updateUser, addCategory, updateCategory } from '../api/ApiCollection';
 
 interface AddDataProps {
   slug: string;
   isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpen: (isOpen: boolean) => void;
+  editData?: any; 
 }
 
-const AddData: React.FC<AddDataProps> = ({
-  slug,
-  isOpen,
-  //   columns,
-  setIsOpen,
-}) => {
-  // global
-  const [showModal, setShowModal] = React.useState(false);
-  const [file, setFile] = React.useState<File | null>(null);
-  const [preview, setPreview] = React.useState<string | null>(null);
+const AddData: React.FC<AddDataProps> = ({ slug, isOpen, setIsOpen, editData }) => {
+  const queryClient = useQueryClient();
+  const [formData, setFormData] = useState<any>({});
 
-  // add user
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [phone, setPhone] = React.useState('');
-  const [isVerified, setIsVerified] = React.useState('');
-  const [formUserIsEmpty, setFormUserIsEmpty] = React.useState(true);
-
-  // add product
-  const [title, setTitle] = React.useState('');
-  const [color, setColor] = React.useState('');
-  const [producer, setProducer] = React.useState('');
-  const [price, setPrice] = React.useState('');
-  const [inStock, setInStock] = React.useState('');
-  const [formProductIsEmpty, setFormProductIsEmpty] =
-    React.useState(true);
-
-  // global
-  const loadImage = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const imageUpload = e.target.files[0];
-      setFile(imageUpload);
-      setPreview(URL.createObjectURL(imageUpload));
+  useEffect(() => {
+    if (editData) {
+      setFormData(editData);
+    } else {
+      setFormData(slug === 'user' ? {
+        fullName: '',
+        email: '',
+        phone: '',
+        userType: 'seller',
+        password: '',
+        isVerified: false
+      } : {
+        name: '',
+        icon: '',
+        color: '#3b82f6',
+        description: '',
+        isActive: true
+      });
     }
-  };
+  }, [editData, slug]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const userMutation = useMutation({
+    mutationFn: editData
+      ? (data: any) => updateUser(editData.id, data)
+      : (data: any) => addUser(data),
+    onSuccess: () => {
+      toast.success(`User ${editData ? 'updated' : 'added'} successfully!`);
+      queryClient.invalidateQueries({ queryKey: ['allusers'] });
+      setIsOpen(false);
+    },
+    onError: (error: any) => {
+      toast.error(`Error: ${error.response?.data?.error || error.message}`);
+    },
+  });
+
+  const categoryMutation = useMutation({
+    mutationFn: editData
+      ? (data: any) => updateCategory(editData.id, data)
+      : (data: any) => addCategory(data),
+    onSuccess: () => {
+      toast.success(`Category ${editData ? 'updated' : 'added'} successfully!`);
+      queryClient.invalidateQueries({ queryKey: ['allcategories'] });
+      setIsOpen(false);
+    },
+    onError: (error: any) => {
+      toast.error(`Error: ${error.response?.data?.error || error.message}`);
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast('Gabisa dong!', { icon: '😛' });
+
+    if (slug === 'user') {
+      userMutation.mutate(formData);
+    } else if (slug === 'category') {
+      categoryMutation.mutate(formData);
+    }
   };
 
-  React.useEffect(() => {
-    setShowModal(isOpen);
-  }, [isOpen]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    setFormData((prev: any) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    }));
+  };
 
-  // add user
-  React.useEffect(() => {
-    if (
-      firstName === '' ||
-      lastName === '' ||
-      email === '' ||
-      phone === '' ||
-      isVerified === '' ||
-      file === null
-    ) {
-      setFormUserIsEmpty(true);
-    }
+  if (!isOpen) return null;
 
-    if (
-      firstName !== '' &&
-      lastName !== '' &&
-      email !== '' &&
-      phone !== '' &&
-      isVerified !== '' &&
-      file !== null
-    ) {
-      setFormUserIsEmpty(false);
-    }
-  }, [email, file, firstName, isVerified, lastName, phone]);
+  return (
+    <div className="modal modal-open">
+      <div className="modal-box max-w-2xl">
+        <h3 className="font-bold text-lg mb-4">
+          {editData ? `Edit ${slug}` : `Add New ${slug}`}
+        </h3>
 
-  React.useEffect(() => {
-    if (
-      title === '' ||
-      color === '' ||
-      producer === '' ||
-      price === '' ||
-      inStock === '' ||
-      file === null
-    ) {
-      setFormProductIsEmpty(true);
-    }
-
-    if (
-      title !== '' &&
-      color !== '' &&
-      producer !== '' &&
-      price !== '' &&
-      inStock !== '' &&
-      file !== null
-    ) {
-      setFormProductIsEmpty(false);
-    }
-  }, [color, file, inStock, price, producer, title]);
-
-  if (slug === 'user') {
-    return (
-      <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center bg-black/75 z-[99]">
-        <div
-          className={`w-[80%] xl:w-[50%] rounded-lg p-7 bg-base-100 relative transition duration-300 flex flex-col items-stretch gap-5 ${
-            showModal ? 'translate-y-0' : 'translate-y-full'
-          }
-            ${showModal ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <div className="w-full flex justify-between pb-5 border-b border-base-content border-opacity-30">
-            <button
-              onClick={() => {
-                setShowModal(false);
-                setIsOpen(false);
-              }}
-              className="absolute top-5 right-3 btn btn-ghost btn-circle"
-            >
-              <HiOutlineXMark className="text-xl font-bold" />
-            </button>
-            <span className="text-2xl font-bold">Add new {slug}</span>
-          </div>
-          <form
-            onSubmit={handleSubmit}
-            className="w-full grid grid-cols-1 lg:grid-cols-2 gap-4"
-          >
-            <input
-              type="text"
-              placeholder="First Name"
-              className="input input-bordered w-full"
-              name="firstName"
-              id="firstName"
-              onChange={(element) =>
-                setFirstName(element.target.value)
-              }
-            />
-            <input
-              type="text"
-              placeholder="Last Name"
-              className="input input-bordered w-full"
-              name="lastName"
-              id="lastName"
-              onChange={(element) =>
-                setLastName(element.target.value)
-              }
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              className="input input-bordered w-full"
-              name="email"
-              id="email"
-              onChange={(element) => setEmail(element.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Phone"
-              className="input input-bordered w-full"
-              name="phone"
-              id="phone"
-              onChange={(element) => setPhone(element.target.value)}
-            />
-            <label className="form-control w-full">
-              <div className="label">
-                <span className="label-text">Verified Status</span>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {slug === 'user' ? (
+            <>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Full Name *</span>
+                </label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={formData.fullName || ''}
+                  onChange={handleChange}
+                  className="input input-bordered"
+                  required
+                />
               </div>
-              <select
-                className="select select-bordered"
-                name="isVerified"
-                id="isVerified"
-                onChange={(element) =>
-                  setIsVerified(element.target.value)
-                }
-              >
-                <option disabled selected>
-                  Select one
-                </option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </select>
-            </label>
-            <label className="form-control w-full">
-              <div className="label">
-                <span className="label-text">
-                  Pick a profile photo
-                </span>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Email *</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email || ''}
+                  onChange={handleChange}
+                  className="input input-bordered"
+                  required
+                />
               </div>
-              <input
-                type="file"
-                className="file-input file-input-bordered w-full"
-                onChange={loadImage}
-              />
-            </label>
-            {preview && preview !== '' && (
-              <div className="w-full flex flex-col items-start gap-3">
-                <span>Profile Preview</span>
-                <div className="avatar">
-                  <div className="w-24 rounded-full">
-                    <img src={preview} alt="profile-upload" />
-                  </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Phone</span>
+                </label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={formData.phone || ''}
+                  onChange={handleChange}
+                  className="input input-bordered"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">User Type</span>
+                </label>
+                <select
+                  name="userType"
+                  value={formData.userType || 'customer'}
+                  onChange={handleChange}
+                  className="select select-bordered"
+                >
+                  <option value="seller">Seller</option>
+                  <option value="customer">Customer</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Password {!editData && '*'}</span>
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password || ''}
+                  onChange={handleChange}
+                  className="input input-bordered"
+                  placeholder={editData ? "Leave blank to keep current" : ""}
+                  required={!editData}
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="cursor-pointer label justify-start gap-2">
+                  <input
+                    type="checkbox"
+                    name="isVerified"
+                    checked={formData.isVerified || false}
+                    onChange={handleChange}
+                    className="checkbox"
+                  />
+                  <span className="label-text">Verified</span>
+                </label>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Name *</span>
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name || ''}
+                  onChange={handleChange}
+                  className="input input-bordered"
+                  required
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Icon</span>
+                </label>
+                <input
+                  type="text"
+                  name="icon"
+                  value={formData.icon || ''}
+                  onChange={handleChange}
+                  className="input input-bordered"
+                  placeholder="e.g., FaUser, FaHome"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Color</span>
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    name="color"
+                    value={formData.color || '#3b82f6'}
+                    onChange={handleChange}
+                    className="w-12 h-12"
+                  />
+                  <input
+                    type="text"
+                    name="color"
+                    value={formData.color || '#3b82f6'}
+                    onChange={handleChange}
+                    className="input input-bordered flex-1"
+                  />
                 </div>
               </div>
-            )}
-            <button
-              className={`mt-5 btn ${
-                formUserIsEmpty ? 'btn-disabled' : 'btn-primary'
-              } btn-block col-span-full font-semibold`}
-            >
-              Submit
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
 
-  if (slug === 'product') {
-    return (
-      <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center bg-black/75 z-[99]">
-        <div
-          className={`w-[80%] xl:w-[50%] rounded-lg p-7 bg-base-100 relative transition duration-300 flex flex-col items-stretch gap-5 ${
-            showModal ? 'translate-y-0' : 'translate-y-full'
-          }
-            ${showModal ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <div className="w-full flex justify-between pb-5 border-b border-base-content border-opacity-30">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Description</span>
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description || ''}
+                  onChange={handleChange}
+                  className="textarea textarea-bordered h-20"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="cursor-pointer label justify-start gap-2">
+                  <input
+                    type="checkbox"
+                    name="isActive"
+                    checked={formData.isActive !== false}
+                    onChange={handleChange}
+                    className="checkbox"
+                  />
+                  <span className="label-text">Active</span>
+                </label>
+              </div>
+            </>
+          )}
+
+          <div className="modal-action">
             <button
-              onClick={() => {
-                setShowModal(false);
-                setIsOpen(false);
-              }}
-              className="absolute top-5 right-3 btn btn-ghost btn-circle"
+              type="submit"
+              className="btn btn-primary"
+              disabled={userMutation.isPending || categoryMutation.isPending}
             >
-              <HiOutlineXMark className="text-xl font-bold" />
+              {userMutation.isPending || categoryMutation.isPending
+                ? 'Saving...'
+                : editData ? 'Update' : 'Add'}
             </button>
-            <span className="text-2xl font-bold">Add new {slug}</span>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setIsOpen(false)}
+            >
+              Cancel
+            </button>
           </div>
-          <form
-            onSubmit={handleSubmit}
-            className="w-full grid grid-cols-1 lg:grid-cols-2 gap-4"
-          >
-            <input
-              type="text"
-              placeholder="Product Title"
-              className="input input-bordered w-full"
-              name="title"
-              id="title"
-              onChange={(element) => setTitle(element.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Colour: Black, White, Red, etc"
-              className="input input-bordered w-full"
-              name="color"
-              id="color"
-              onChange={(element) => setColor(element.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Producer: Samsung, Apple, etc"
-              className="input input-bordered w-full"
-              name="producer"
-              id="producer"
-              onChange={(element) =>
-                setProducer(element.target.value)
-              }
-            />
-            <input
-              type="text"
-              placeholder="Price"
-              className="input input-bordered w-full"
-              name="price"
-              id="price"
-              onChange={(element) => setPrice(element.target.value)}
-            />
-            <label className="form-control w-full">
-              <div className="label">
-                <span className="label-text">In Stock Status</span>
-              </div>
-              <select
-                className="select select-bordered"
-                name="inStock"
-                id="inStock"
-                onChange={(element) =>
-                  setInStock(element.target.value)
-                }
-              >
-                <option disabled selected>
-                  Select one
-                </option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </select>
-            </label>
-            <label className="form-control w-full">
-              <div className="label">
-                <span className="label-text">
-                  Pick a product image
-                </span>
-              </div>
-              <input
-                type="file"
-                className="file-input file-input-bordered w-full"
-                onChange={loadImage}
-              />
-            </label>
-            {preview && preview !== '' && (
-              <div className="w-full flex flex-col items-start gap-3">
-                <span>Product Preview</span>
-                <div className="avatar">
-                  <div className="w-24 rounded-full">
-                    <img src={preview} alt="profile-upload" />
-                  </div>
-                </div>
-              </div>
-            )}
-            <button
-              className={`mt-5 btn ${
-                formProductIsEmpty ? 'btn-disabled' : 'btn-primary'
-              } btn-block col-span-full font-semibold`}
-            >
-              Submit
-            </button>
-          </form>
-        </div>
+        </form>
       </div>
-    );
-  }
-
-  return null;
+    </div>
+  );
 };
 
 export default AddData;
