@@ -484,3 +484,97 @@ export const changePassword = async (id: string, passwordData: {
 
   return response;
 };
+export const fetchSellerStats = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/seller-stats`)
+    .then((res) => {
+      console.log('axios get seller stats:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching seller stats:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET BUYER STATISTICS
+export const fetchBuyerStats = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/buyer-stats`)
+    .then((res) => {
+      console.log('axios get buyer stats:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching buyer stats:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET USER REGISTRATION TRENDS
+export const fetchUserRegistrations = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/user-registrations`)
+    .then((res) => {
+      console.log('axios get user registrations:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching user registrations:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET PRODUCT REGISTRATION TRENDS
+export const fetchProductRegistrations = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/product-registrations`)
+    .then((res) => {
+      console.log('axios get product registrations:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching product registrations:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET REVENUE DATA
+export const fetchRevenueData = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/revenue-data`)
+    .then((res) => {
+      console.log('axios get revenue data:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching revenue data:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET ORDER STATISTICS
+export const fetchOrderStats = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/order-stats`)
+    .then((res) => {
+      console.log('axios get order stats:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching order stats:', err);
+      throw err;
+    });
+
+  return response;
+};

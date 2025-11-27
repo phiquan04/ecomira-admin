@@ -1,27 +1,25 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { IconType } from 'react-icons';
+"use client"
+
+import type React from "react"
+import { NavLink } from "react-router-dom"
+import type { IconType } from "react-icons"
 
 interface MenuItemProps {
-  onClick?: () => void;
-  catalog: string;
+  onClick?: () => void
+  catalog: string
   listItems: Array<{
-    isLink: boolean;
-    url?: string;
-    icon: IconType;
-    label: string;
-    onClick?: () => void;
-  }>;
+    isLink: boolean
+    url?: string
+    icon: IconType
+    label: string
+    onClick?: () => void
+  }>
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({
-  onClick,
-  catalog,
-  listItems,
-}) => {
+const MenuItem: React.FC<MenuItemProps> = ({ onClick, catalog, listItems }) => {
   return (
-    <div className="w-full flex flex-col items-stretch gap-2">
-      <span className="hidden xl:block px-2 xl:text-sm 2xl:text-base 3xl:text-lg uppercase">
+    <div className="w-full flex flex-col items-stretch gap-1">
+      <span className="hidden xl:block px-3 py-2 text-xs font-semibold text-indigo-400 uppercase tracking-wider">
         {catalog}
       </span>
       {listItems.map((listItem, index) => {
@@ -30,36 +28,34 @@ const MenuItem: React.FC<MenuItemProps> = ({
             <NavLink
               key={index}
               onClick={onClick}
-              to={listItem.url || ''}
+              to={listItem.url || ""}
               className={({ isActive }) =>
-                isActive
-                  ? 'btn 2xl:min-h-[52px] 3xl:min-h-[64px] btn-active btn-ghost btn-block justify-start'
-                  : 'btn 2xl:min-h-[52px] 3xl:min-h-[64px] btn-ghost btn-block justify-start'
+                `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  isActive
+                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
+                    : "text-gray-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-indigo-600"
+                }`
               }
             >
-              <listItem.icon className="xl:text-2xl 2xl:text-3xl 3xl:text-4xl" />
-              <span className="xl:text-sm 2xl:text-base 3xl:text-lg capitalize">
-                {listItem.label}
-              </span>
+              <listItem.icon className="text-xl" />
+              <span className="text-sm font-medium capitalize">{listItem.label}</span>
             </NavLink>
-          );
+          )
         } else {
           return (
             <button
               key={index}
               onClick={listItem.onClick}
-              className="btn 2xl:min-h-[52px] 3xl:min-h-[64px] btn-ghost btn-block justify-start"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-indigo-600 transition-all duration-200"
             >
-              <listItem.icon className="xl:text-2xl 2xl:text-3xl 3xl:text-4xl" />
-              <span className="xl:text-sm 2xl:text-base 3xl:text-lg capitalize">
-                {listItem.label}
-              </span>
+              <listItem.icon className="text-xl" />
+              <span className="text-sm font-medium capitalize">{listItem.label}</span>
             </button>
-          );
+          )
         }
       })}
     </div>
-  );
-};
+  )
+}
 
-export default MenuItem;
+export default MenuItem

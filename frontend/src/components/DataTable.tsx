@@ -46,26 +46,63 @@ const DataTable: React.FC<DataTableProps> = ({
     }
   };
 
+  const getActionButtons = (params: any) => {
+    const actions = [];
+
+    // Hiển thị nút View cho users và products
+    if (slug === 'users' || slug === 'products') {
+      actions.push(
+        <Link to={`/${slug}/${params.row.id}`} key="view">
+          <button 
+            className="btn btn-info btn-sm p-1 min-h-0 h-8 w-8"
+            title="View"
+          >
+            👁️
+          </button>
+        </Link>
+      );
+    }
+
+    // Hiển thị nút Edit cho users và categories
+    if (slug === 'users' || slug === 'categories') {
+      actions.push(
+        <Link to={`/${slug}/edit/${params.row.id}`} key="edit">
+          <button 
+            className="btn btn-warning btn-sm p-1 min-h-0 h-8 w-8"
+            title="Edit"
+          >
+            ✏️
+          </button>
+        </Link>
+      );
+    }
+
+    // Hiển thị nút Delete cho users và categories
+    if (slug === 'users' || slug === 'categories') {
+      actions.push(
+        <button
+          key="delete"
+          className="btn btn-error btn-sm p-1 min-h-0 h-8 w-8"
+          onClick={() => handleDelete(params.row.id)}
+          disabled={deleteMutation.isPending}
+          title="Delete"
+        >
+          {deleteMutation.isPending ? '⏳' : '🗑️'}
+        </button>
+      );
+    }
+
+    return actions;
+  };
+
   const actionColumn: GridColDef = {
     field: 'action',
     headerName: 'Action',
-    width: 200,
+    width: slug === 'users' ? 140 : 100, // Điều chỉnh width dựa trên số lượng nút
     renderCell: (params) => {
       return (
-        <div className="flex gap-2">
-          <Link to={`/${slug}/${params.row.id}`}>
-            <button className="btn btn-info btn-sm">View</button>
-          </Link>
-          <Link to={`/${slug}/edit/${params.row.id}`}>
-            <button className="btn btn-warning btn-sm">Edit</button>
-          </Link>
-          <button
-            className="btn btn-error btn-sm"
-            onClick={() => handleDelete(params.row.id)}
-            disabled={deleteMutation.isPending}
-          >
-            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-          </button>
+        <div className="flex gap-1">
+          {getActionButtons(params)}
         </div>
       );
     },
