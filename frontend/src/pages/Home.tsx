@@ -1,13 +1,10 @@
 // Home.tsx
-import React from 'react';
-import TopDealsBox from '../components/topDealsBox/TopDealsBox';
 import ChartBox from '../components/charts/ChartBox';
 import { useQuery } from '@tanstack/react-query';
 import {
   MdAttachMoney,
   MdShoppingCart,
   MdPeople,
-  MdInventory2,
   MdTrendingUp,
   MdAccountCircle,
   MdAddBox

@@ -4,12 +4,8 @@ import {
   HiOutlineUsers,
   HiOutlineCube,
   HiOutlineClipboardDocumentList,
-  HiOutlineDocumentChartBar,
-  HiOutlinePencilSquare,
   HiOutlineCalendarDays,
   HiOutlinePresentationChartBar,
-  HiOutlineDocumentText,
-  HiOutlineArrowLeftOnRectangle,
 } from "react-icons/hi2"
 
 export const menu = [
@@ -51,23 +47,11 @@ export const menu = [
         icon: HiOutlineClipboardDocumentList,
         label: "categories",
       },
-      {
-        isLink: true,
-        url: "/posts",
-        icon: HiOutlineDocumentChartBar,
-        label: "posts",
-      },
     ],
   },
   {
     catalog: "general",
     listItems: [
-      {
-        isLink: true,
-        url: "/notes",
-        icon: HiOutlinePencilSquare,
-        label: "notes",
-      },
       {
         isLink: true,
         url: "/calendar",
@@ -84,23 +68,6 @@ export const menu = [
         url: "/charts",
         icon: HiOutlinePresentationChartBar,
         label: "charts",
-      },
-      {
-        isLink: true,
-        url: "/logs",
-        icon: HiOutlineDocumentText,
-        label: "logs",
-      },
-    ],
-  },
-  {
-    catalog: "miscellaneous",
-    listItems: [
-      {
-        isLink: true,
-        url: "/login",
-        icon: HiOutlineArrowLeftOnRectangle,
-        label: "log out",
       },
     ],
   },
