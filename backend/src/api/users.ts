@@ -424,4 +424,90 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// GET seller statistics by user ID
+router.get('/:id/seller-stats', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Kiểm tra user có phải là seller không
+    const userCheck = await pool.query(
+      'SELECT user_type FROM users WHERE id = $1',
+      [id]
+    );
+    
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    if (userCheck.rows[0].user_type !== 'seller') {
+      return res.status(400).json({ error: 'User is not a seller' });
+    }
+
+    // Thống kê cho seller
+    const statsQuery = `
+      SELECT 
+        COALESCE(SUM(oi.subtotal), 0) as totalrevenue,
+        COUNT(DISTINCT o.id) as totalorders,
+        COUNT(DISTINCT p.id) as totalproducts
+      FROM users u
+      LEFT JOIN products p ON u.id = p.seller_id
+      LEFT JOIN order_items oi ON p.id = oi.product_id
+      LEFT JOIN orders o ON oi.order_id = o.id AND o.status != 'cancelled'
+      WHERE u.id = $1
+    `;
+    
+    const result = await pool.query(statsQuery, [id]);
+    
+    res.json({
+      totalRevenue: parseFloat(result.rows[0].totalrevenue) || 0,
+      totalOrders: parseInt(result.rows[0].totalorders) || 0,
+      totalProducts: parseInt(result.rows[0].totalproducts) || 0
+    });
+  } catch (error) {
+    console.error('Error fetching seller stats:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET customer statistics by user ID
+router.get('/:id/customer-stats', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Kiểm tra user có phải là customer không
+    const userCheck = await pool.query(
+      'SELECT user_type FROM users WHERE id = $1',
+      [id]
+    );
+    
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    if (userCheck.rows[0].user_type !== 'customer') {
+      return res.status(400).json({ error: 'User is not a customer' });
+    }
+
+    // Thống kê cho customer
+    const statsQuery = `
+      SELECT 
+        COUNT(DISTINCT o.id) as totalorders,
+        COALESCE(SUM(o.total_amount), 0) as totalspent
+      FROM orders o
+      WHERE o.customer_id = $1
+      AND o.status != 'cancelled'
+    `;
+    
+    const result = await pool.query(statsQuery, [id]);
+    
+    res.json({
+      totalOrders: parseInt(result.rows[0].totalorders) || 0,
+      totalSpent: parseFloat(result.rows[0].totalspent) || 0
+    });
+  } catch (error) {
+    console.error('Error fetching customer stats:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;

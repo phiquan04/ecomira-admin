@@ -5,7 +5,6 @@ import {
   MdAttachMoney,
   MdShoppingCart,
   MdPeople,
-  MdTrendingUp,
   MdAccountCircle,
   MdAddBox
 } from 'react-icons/md';
@@ -13,9 +12,7 @@ import {
   fetchSellerStats,
   fetchBuyerStats,
   fetchUserRegistrations,
-  fetchProductRegistrations,
-  fetchRevenueData,
-  fetchOrderStats
+  fetchProductRegistrations
 } from '../api/ApiCollection';
 
 const Home = () => {
@@ -43,18 +40,6 @@ const Home = () => {
     queryFn: fetchProductRegistrations,
   });
 
-  // Query for revenue data
-  const queryRevenueData = useQuery({
-    queryKey: ['revenueData'],
-    queryFn: fetchRevenueData,
-  });
-
-  // Query for order statistics
-  const queryOrderStats = useQuery({
-    queryKey: ['orderStats'],
-    queryFn: fetchOrderStats,
-  });
-
   return (
     <div className="home w-full p-0 m-0">
       {/* Two columns layout */}
@@ -74,6 +59,8 @@ const Home = () => {
               <div className="stat-value text-primary">
                 {querySellerStats.isLoading ? (
                   <div className="skeleton h-8 w-24"></div>
+                ) : querySellerStats.isError ? (
+                  <span className="text-error">Lỗi</span>
                 ) : querySellerStats.isSuccess ? (
                   `$${querySellerStats.data.totalRevenue.toLocaleString()}`
                 ) : (
@@ -90,6 +77,8 @@ const Home = () => {
               <div className="stat-value text-secondary">
                 {querySellerStats.isLoading ? (
                   <div className="skeleton h-8 w-20"></div>
+                ) : querySellerStats.isError ? (
+                  <span className="text-error">Lỗi</span>
                 ) : querySellerStats.isSuccess ? (
                   querySellerStats.data.totalOrders.toLocaleString()
                 ) : (
@@ -115,6 +104,8 @@ const Home = () => {
               <div className="stat-value text-accent">
                 {queryBuyerStats.isLoading ? (
                   <div className="skeleton h-8 w-20"></div>
+                ) : queryBuyerStats.isError ? (
+                  <span className="text-error">Lỗi</span>
                 ) : queryBuyerStats.isSuccess ? (
                   queryBuyerStats.data.totalOrders.toLocaleString()
                 ) : (
@@ -131,6 +122,8 @@ const Home = () => {
               <div className="stat-value text-info">
                 {queryBuyerStats.isLoading ? (
                   <div className="skeleton h-8 w-24"></div>
+                ) : queryBuyerStats.isError ? (
+                  <span className="text-error">Lỗi</span>
                 ) : queryBuyerStats.isSuccess ? (
                   `$${queryBuyerStats.data.totalSpent.toLocaleString()}`
                 ) : (
@@ -152,7 +145,7 @@ const Home = () => {
             color="#8884d8"
             {...queryUserRegistrations.data}
             isLoading={queryUserRegistrations.isLoading}
-            isSuccess={queryUserRegistrations.isSuccess}
+            isSuccess={queryUserRegistrations.isSuccess && !queryUserRegistrations.isError}
           />
         </div>
 
@@ -165,31 +158,7 @@ const Home = () => {
             IconBox={MdAddBox}
             {...queryProductRegistrations.data}
             isLoading={queryProductRegistrations.isLoading}
-            isSuccess={queryProductRegistrations.isSuccess}
-          />
-        </div>
-
-        {/* Revenue Trend Chart */}
-        <div className="box">
-          <ChartBox
-            chartType={'area'}
-            title="Xu hướng doanh thu"
-            color="#ffc658"
-            IconBox={MdTrendingUp}
-            {...queryRevenueData.data}
-            isLoading={queryRevenueData.isLoading}
-            isSuccess={queryRevenueData.isSuccess}
-          />
-        </div>
-
-        {/* Order Statistics Chart */}
-        <div className="box">
-          <ChartBox
-            chartType={'pie'}
-            title="Phân loại đơn hàng"
-            {...queryOrderStats.data}
-            isLoading={queryOrderStats.isLoading}
-            isSuccess={queryOrderStats.isSuccess}
+            isSuccess={queryProductRegistrations.isSuccess && !queryProductRegistrations.isError}
           />
         </div>
       </div>
