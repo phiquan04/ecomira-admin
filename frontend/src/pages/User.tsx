@@ -7,7 +7,9 @@ import { useQuery } from "@tanstack/react-query"
 import { 
   fetchAUser, 
   fetchSellerStatsByUserId, 
-  fetchCustomerStatsByUserId 
+  fetchCustomerStatsByUserId,
+  fetchSellerRevenueChart,
+  fetchCustomerActivityChart
 } from "../api/ApiCollection"
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts"
 
@@ -42,24 +44,27 @@ const User = () => {
     enabled: !!userData && userData.userType === 'customer',
   })
 
-  // Dữ liệu biểu đồ doanh thu (mẫu - bạn có thể thay bằng dữ liệu thật)
-  const revenueData = [
-    { month: "Jan", revenue: 4000 },
-    { month: "Feb", revenue: 3000 },
-    { month: "Mar", revenue: 2000 },
-    { month: "Apr", revenue: 2780 },
-    { month: "May", revenue: 1890 },
-    { month: "Jun", revenue: 2390 },
-  ]
+  // Query để lấy dữ liệu biểu đồ doanh thu của seller
+  const { 
+    data: revenueChartData, 
+    isLoading: revenueChartLoading, 
+    isSuccess: revenueChartSuccess 
+  } = useQuery({
+    queryKey: ["sellerRevenueChart", id],
+    queryFn: () => fetchSellerRevenueChart(id || ""),
+    enabled: !!userData && userData.userType === 'seller',
+  })
 
-  const activityData = [
-    { name: "Jan", purchased: 4000, wishlisted: 2400 },
-    { name: "Feb", purchased: 3000, wishlisted: 1398 },
-    { name: "Mar", purchased: 2000, wishlisted: 9800 },
-    { name: "Apr", purchased: 2780, wishlisted: 3908 },
-    { name: "May", purchased: 1890, wishlisted: 4800 },
-    { name: "Jun", purchased: 2390, wishlisted: 3800 },
-  ]
+  // Query để lấy dữ liệu biểu đồ hoạt động của customer
+  const { 
+    data: activityChartData, 
+    isLoading: activityChartLoading, 
+    isSuccess: activityChartSuccess 
+  } = useQuery({
+    queryKey: ["customerActivityChart", id],
+    queryFn: () => fetchCustomerActivityChart(id || ""),
+    enabled: !!userData && userData.userType === 'customer',
+  })
 
   React.useEffect(() => {
     if (userLoading) {
@@ -211,7 +216,7 @@ const User = () => {
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
             <div className="p-6">
               <h4 className="font-semibold text-lg text-gray-800 mb-4">
-                {userData?.userType === 'seller' ? 'Revenue Chart' : 'Activity Chart'}
+                {userData?.userType === 'seller' ? 'Revenue Chart (Last 6 Months)' : 'Activity Chart (Last 6 Months)'}
               </h4>
               {userLoading ? (
                 <div className="w-full h-[300px] bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl animate-pulse"></div>
@@ -219,42 +224,53 @@ const User = () => {
                 <div className="w-full h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                     {userData.userType === 'seller' ? (
-                      <BarChart data={revenueData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="revenue" fill="#8884d8" name="Revenue ($)" />
-                      </BarChart>
+                      revenueChartSuccess ? (
+                        <BarChart data={revenueChartData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="month" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Bar dataKey="revenue" fill="#8884d8" name="Revenue ($)" />
+                        </BarChart>
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <p>No revenue data available</p>
+                        </div>
+                      )
                     ) : (
-                      <LineChart data={activityData}>
-                        <XAxis dataKey="name" stroke="#9CA3AF" />
-                        <YAxis stroke="#9CA3AF" />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: "white",
-                            border: "none",
-                            borderRadius: "12px",
-                            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
-                          }}
-                        />
-                        <Legend />
-                        <Line
-                          type="monotone"
-                          dataKey="purchased"
-                          stroke="#6366F1"
-                          strokeWidth={3}
-                          dot={{ fill: "#6366F1" }}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="wishlisted"
-                          stroke="#A855F7"
-                          strokeWidth={3}
-                          dot={{ fill: "#A855F7" }}
-                        />
-                      </LineChart>
+                      activityChartSuccess ? (
+                        <LineChart data={activityChartData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="month" />
+                          <YAxis yAxisId="left" />
+                          <YAxis yAxisId="right" orientation="right" />
+                          <Tooltip />
+                          <Legend />
+                          <Line
+                            yAxisId="left"
+                            type="monotone"
+                            dataKey="orderCount"
+                            stroke="#6366F1"
+                            strokeWidth={3}
+                            dot={{ fill: "#6366F1" }}
+                            name="Orders"
+                          />
+                          <Line
+                            yAxisId="right"
+                            type="monotone"
+                            dataKey="totalSpent"
+                            stroke="#A855F7"
+                            strokeWidth={3}
+                            dot={{ fill: "#A855F7" }}
+                            name="Total Spent ($)"
+                          />
+                        </LineChart>
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <p>No activity data available</p>
+                        </div>
+                      )
                     )}
                   </ResponsiveContainer>
                 </div>

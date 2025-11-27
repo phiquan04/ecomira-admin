@@ -613,3 +613,35 @@ export const fetchCustomerStatsByUserId = async (id: string) => {
 
   return response;
 };
+
+// GET SELLER REVENUE CHART DATA BY USER ID
+export const fetchSellerRevenueChart = async (id: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/users/${id}/seller-revenue-chart`)
+    .then((res) => {
+      console.log('axios get seller revenue chart:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching seller revenue chart:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET CUSTOMER ACTIVITY CHART DATA BY USER ID
+export const fetchCustomerActivityChart = async (id: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/users/${id}/customer-activity-chart`)
+    .then((res) => {
+      console.log('axios get customer activity chart:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching customer activity chart:', err);
+      throw err;
+    });
+
+  return response;
+};

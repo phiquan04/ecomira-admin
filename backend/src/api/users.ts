@@ -510,4 +510,129 @@ router.get('/:id/customer-stats', async (req, res) => {
   }
 });
 
+// GET seller revenue chart data by user ID
+router.get('/:id/seller-revenue-chart', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Kiểm tra user có phải là seller không
+    const userCheck = await pool.query(
+      'SELECT user_type FROM users WHERE id = $1',
+      [id]
+    );
+    
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    if (userCheck.rows[0].user_type !== 'seller') {
+      return res.status(400).json({ error: 'User is not a seller' });
+    }
+
+    // Lấy dữ liệu doanh thu 6 tháng gần nhất
+    const revenueQuery = `
+      SELECT 
+        TO_CHAR(date_trunc('month', o.created_at), 'Mon') as month,
+        EXTRACT(MONTH FROM o.created_at) as month_num,
+        COALESCE(SUM(oi.subtotal), 0) as revenue
+      FROM orders o
+      JOIN order_items oi ON o.id = oi.order_id
+      WHERE oi.seller_id = $1
+        AND o.status = 'delivered'
+        AND o.created_at >= date_trunc('month', CURRENT_DATE - INTERVAL '5 months')
+      GROUP BY date_trunc('month', o.created_at), month_num
+      ORDER BY month_num
+    `;
+    
+    const result = await pool.query(revenueQuery, [id]);
+    
+    // Đảm bảo có đủ 6 tháng, nếu không có dữ liệu thì trả về 0
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentMonth = new Date().getMonth(); // 0-indexed
+    const last6Months = [];
+    
+    for (let i = 5; i >= 0; i--) {
+      const monthIndex = (currentMonth - i + 12) % 12;
+      const monthName = months[monthIndex];
+      last6Months.push(monthName);
+    }
+    
+    const revenueData = last6Months.map(month => {
+      const found = result.rows.find(row => row.month === month);
+      return {
+        month,
+        revenue: found ? parseFloat(found.revenue) : 0
+      };
+    });
+    
+    res.json(revenueData);
+  } catch (error) {
+    console.error('Error fetching seller revenue chart:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET customer activity chart data by user ID
+router.get('/:id/customer-activity-chart', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Kiểm tra user có phải là customer không
+    const userCheck = await pool.query(
+      'SELECT user_type FROM users WHERE id = $1',
+      [id]
+    );
+    
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    if (userCheck.rows[0].user_type !== 'customer') {
+      return res.status(400).json({ error: 'User is not a customer' });
+    }
+
+    // Lấy dữ liệu số đơn hàng và tổng chi tiêu 6 tháng gần nhất
+    const activityQuery = `
+      SELECT 
+        TO_CHAR(date_trunc('month', created_at), 'Mon') as month,
+        EXTRACT(MONTH FROM created_at) as month_num,
+        COUNT(*) as order_count,
+        COALESCE(SUM(total_amount), 0) as total_spent
+      FROM orders
+      WHERE customer_id = $1
+        AND status = 'delivered'
+        AND created_at >= date_trunc('month', CURRENT_DATE - INTERVAL '5 months')
+      GROUP BY date_trunc('month', created_at), month_num
+      ORDER BY month_num
+    `;
+    
+    const result = await pool.query(activityQuery, [id]);
+    
+    // Đảm bảo có đủ 6 tháng, nếu không có dữ liệu thì trả về 0
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentMonth = new Date().getMonth(); // 0-indexed
+    const last6Months = [];
+    
+    for (let i = 5; i >= 0; i--) {
+      const monthIndex = (currentMonth - i + 12) % 12;
+      const monthName = months[monthIndex];
+      last6Months.push(monthName);
+    }
+    
+    const activityData = last6Months.map(month => {
+      const found = result.rows.find(row => row.month === month);
+      return {
+        month,
+        orderCount: found ? parseInt(found.order_count) : 0,
+        totalSpent: found ? parseFloat(found.total_spent) : 0
+      };
+    });
+    
+    res.json(activityData);
+  } catch (error) {
+    console.error('Error fetching customer activity chart:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;
