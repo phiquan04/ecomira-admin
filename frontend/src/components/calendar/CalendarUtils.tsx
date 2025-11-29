@@ -35,32 +35,32 @@ const randomStr4 = randomAja4.toISOString().replace(/T.*$/, '');
 export const INITIAL_EVENTS: EventInput[] = [
   {
     id: createEventId(),
-    title: 'Hari ini ngapain hah? 🙃',
+    title: '🙃',
     start: todayStr,
   },
   {
     id: createEventId(),
-    title: 'Jirr kerja rodi 🤡',
+    title: '🤡',
     start: tomorrowStr + 'T19:00:00',
   },
   {
     id: createEventId(),
-    title: 'Waduh gawat, deadline! 😑',
+    title: '😑',
     start: nextWeekStr + 'T20:00:00',
   },
   {
     id: createEventId(),
-    title: 'Ketemu client sombong 😠',
+    title: '😠',
     start: randomStr1 + 'T09:00:00',
   },
   {
     id: createEventId(),
-    title: 'Surprise rekan kerja 🥳',
+    title: 'S🥳',
     start: randomStr2 + 'T12:00:00',
   },
   {
     id: createEventId(),
-    title: 'Business trip uhuyyy! 😎',
+    title: '😎',
     start: randomStr3,
     end: randomStr4,
   },

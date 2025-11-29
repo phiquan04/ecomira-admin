@@ -484,3 +484,228 @@ export const changePassword = async (id: string, passwordData: {
 
   return response;
 };
+
+
+// GET REVENUE DATA
+export const fetchRevenueData = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/revenue-data`)
+    .then((res) => {
+      console.log('axios get revenue data:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching revenue data:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET ORDER STATISTICS
+export const fetchOrderStats = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/order-stats`)
+    .then((res) => {
+      console.log('axios get order stats:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching order stats:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET SELLER STATISTICS
+export const fetchSellerStats = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/seller-stats`) // Đổi thành route đúng
+    .then((res) => {
+      console.log('axios get seller stats:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching seller stats:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET BUYER STATISTICS
+export const fetchBuyerStats = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/buyer-stats`) // Đổi thành route đúng
+    .then((res) => {
+      console.log('axios get buyer stats:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching buyer stats:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET USER REGISTRATION TRENDS
+export const fetchUserRegistrations = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/user-registrations`) // Đổi thành route đúng
+    .then((res) => {
+      console.log('axios get user registrations:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching user registrations:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET PRODUCT REGISTRATION TRENDS
+export const fetchProductRegistrations = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/product-registrations`) // Đổi thành route đúng
+    .then((res) => {
+      console.log('axios get product registrations:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching product registrations:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET SELLER STATS BY USER ID
+export const fetchSellerStatsByUserId = async (id: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/users/${id}/seller-stats`)
+    .then((res) => {
+      console.log('axios get seller stats by user id:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching seller stats by user id:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET CUSTOMER STATS BY USER ID
+export const fetchCustomerStatsByUserId = async (id: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/users/${id}/customer-stats`)
+    .then((res) => {
+      console.log('axios get customer stats by user id:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching customer stats by user id:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET SELLER REVENUE CHART DATA BY USER ID
+export const fetchSellerRevenueChart = async (id: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/users/${id}/seller-revenue-chart`)
+    .then((res) => {
+      console.log('axios get seller revenue chart:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching seller revenue chart:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET CUSTOMER ACTIVITY CHART DATA BY USER ID
+export const fetchCustomerActivityChart = async (id: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/users/${id}/customer-activity-chart`)
+    .then((res) => {
+      console.log('axios get customer activity chart:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching customer activity chart:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET USER STATISTICS (total, sellers, customers)
+export const fetchUserStats = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/user-stats`)
+    .then((res) => {
+      console.log("axios get user stats:", res.data)
+      return res.data
+    })
+    .catch((err) => {
+      console.log("Error fetching user stats:", err)
+      throw err
+    })
+
+  return response
+};
+
+// GET REGISTRATION TRENDS (weekly, monthly, yearly)
+export const fetchRegistrationTrends = async (period: "weekly" | "monthly" | "yearly" = "weekly") => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/registration-trends?period=${period}`)
+    .then((res) => {
+      console.log("axios get registration trends:", res.data)
+      return res.data
+    })
+    .catch((err) => {
+      console.log("Error fetching registration trends:", err)
+      throw err
+    })
+
+  return response
+};
+
+// GET TOP 10 SELLERS BY REVENUE
+export const fetchTopSellers = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/top-sellers`)
+    .then((res) => {
+      console.log("axios get top sellers:", res.data)
+      return res.data
+    })
+    .catch((err) => {
+      console.log("Error fetching top sellers:", err)
+      throw err
+    })
+
+  return response
+};
+
+// GET TOP 10 CUSTOMERS BY SPENDING
+export const fetchTopCustomers = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/top-customers`)
+    .then((res) => {
+      console.log("axios get top customers:", res.data)
+      return res.data
+    })
+    .catch((err) => {
+      console.log("Error fetching top customers:", err)
+      throw err
+    })
+
+  return response
+};

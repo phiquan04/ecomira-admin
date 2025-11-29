@@ -15,7 +15,7 @@ import {
   YAxis,
   // CartesianGrid,
   Tooltip,
-  // Legend,
+  Legend,
   ResponsiveContainer,
 } from 'recharts';
 
@@ -169,6 +169,10 @@ const ChartBox: React.FC<ChartBoxProps> = ({
     }
 
     if (isSuccess) {
+      // Kiểm tra nếu có nhiều data series (customer và seller)
+      const hasMultipleSeries = chartData && chartData.length > 0 && 
+        Object.keys(chartData[0]).some(key => key === 'customer' || key === 'seller');
+      
       return (
         <div className="w-full h-full p-0 m-0 flex flex-col items-start 3xl:justify-between gap-3 xl:gap-4">
           <span className="text-2xl xl:text-2xl 2xl:text-4xl font-bold">
@@ -178,17 +182,17 @@ const ChartBox: React.FC<ChartBoxProps> = ({
             {chartData ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
-                  <Bar dataKey={dataKey || ''} fill={color || ''} />
+                  {hasMultipleSeries ? (
+                    <>
+                      <Bar dataKey="customer" fill="#8884d8" />
+                      <Bar dataKey="seller" fill="#82ca9d" />
+                    </>
+                  ) : (
+                    <Bar dataKey={dataKey || ''} fill={color || ''} />
+                  )}
                   <XAxis dataKey="name" />
-                  <Tooltip
-                    contentStyle={{
-                      background: color,
-                      borderRadius: '5px',
-                    }}
-                    itemStyle={{ color: 'white' }}
-                    labelStyle={{ display: 'none' }}
-                    cursor={{ fill: 'none' }}
-                  />
+                  <Tooltip />
+                  <Legend />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

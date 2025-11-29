@@ -2,7 +2,6 @@
 
 import type React from "react"
 import { useState } from "react"
-import ChangeThemes from "../components/ChangesThemes"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import toast from "react-hot-toast"
@@ -64,11 +63,6 @@ const Login = () => {
     <div className="w-full p-0 m-0">
       {/* container */}
       <div className="w-full min-h-screen flex justify-center items-center bg-gradient-to-br from-blue-50 to-purple-50 relative">
-        {/* theme */}
-        <div className="absolute top-5 right-5 z-[99]">
-          <ChangeThemes />
-        </div>
-
         {/* Changed form to use handleLogin */}
         <form
           onSubmit={handleLogin}

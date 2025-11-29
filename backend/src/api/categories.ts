@@ -74,8 +74,8 @@ router.post('/', async (req, res) => {
 
   try {
     const result = await pool.query(
-      `INSERT INTO categories (name, icon, color, description, is_active) 
-       VALUES ($1, $2, $3, $4, $5) 
+      `INSERT INTO categories (name, icon, color, description, is_active, created_at, updated_at) 
+       VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) 
        RETURNING 
          id,
          name,
@@ -85,7 +85,7 @@ router.post('/', async (req, res) => {
          is_active as "isActive",
          created_at as "createdAt",
          updated_at as "updatedAt"`,
-      [name, icon || null, color || null, description || null, isActive || true]
+      [name, icon || null, color || null, description || null, isActive !== false]
     );
 
     const newCategory = result.rows[0];

@@ -26,6 +26,16 @@ const Product = () => {
     }
   }, [isError, isLoading, isSuccess])
 
+  const getImageUrl = (productData: any) => {
+    if (productData?.images && productData.images.length > 0) {
+      return productData.images[0]
+    }
+    if (productData?.imageUrl) {
+      return productData.imageUrl
+    }
+    return "/noimage.png"
+  }
+
   return (
     <div className="w-full min-h-screen p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="max-w-5xl mx-auto">
@@ -40,7 +50,11 @@ const Product = () => {
                 <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 animate-pulse"></div>
               ) : isSuccess ? (
                 <div className="w-32 h-32 rounded-2xl overflow-hidden ring-4 ring-indigo-100 shadow-lg">
-                  <img src={data.imageUrl || "/noimage.png"} alt="product" className="w-full h-full object-cover" />
+                  <img
+                    src={getImageUrl(data) || "/placeholder.svg"}
+                    alt="product"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               ) : null}
 
@@ -82,7 +96,7 @@ const Product = () => {
                 </div>
                 <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
                   <span className="text-xs font-semibold text-purple-500 uppercase tracking-wide">Stock Quantity</span>
-                  <p className="text-gray-800 font-medium mt-1">{data.stockQuantity}</p>
+                  <p className="text-gray-800 font-medium mt-1">{data.stockQuantity ?? data.stock ?? "N/A"}</p>
                 </div>
                 <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl">
                   <span className="text-xs font-semibold text-purple-500 uppercase tracking-wide">Category ID</span>
@@ -110,6 +124,26 @@ const Product = () => {
                   <span className="text-xs font-semibold text-indigo-500 uppercase tracking-wide">Description</span>
                   <p className="text-gray-700 mt-2 leading-relaxed">{data.description || "No description available"}</p>
                 </div>
+
+                {data.images && data.images.length > 1 && (
+                  <div className="col-span-full p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl">
+                    <span className="text-xs font-semibold text-indigo-500 uppercase tracking-wide">All Images</span>
+                    <div className="flex flex-wrap gap-4 mt-3">
+                      {data.images.map((img: string, index: number) => (
+                        <div
+                          key={index}
+                          className="w-24 h-24 rounded-xl overflow-hidden ring-2 ring-indigo-100 shadow-md"
+                        >
+                          <img
+                            src={img || "/placeholder.svg"}
+                            alt={`product-${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : null}
           </div>

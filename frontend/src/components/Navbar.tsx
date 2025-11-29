@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom"
 import { HiBars3CenterLeft } from "react-icons/hi2"
 import { HiSearch, HiOutlineBell } from "react-icons/hi"
 import { RxEnterFullScreen, RxExitFullScreen } from "react-icons/rx"
-import ChangeThemes from "./ChangesThemes"
 import toast from "react-hot-toast"
 import { menu } from "./menu/data"
 import MenuItem from "./menu/MenuItem"
@@ -120,11 +119,6 @@ const Navbar = () => {
         >
           <HiOutlineBell className="text-xl 2xl:text-2xl" />
         </button>
-
-        {/* theme */}
-        <div className="btn btn-circle btn-ghost text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
-          <ChangeThemes />
-        </div>
 
         {/* avatar dropdown */}
         <div className="dropdown dropdown-end ml-1">
