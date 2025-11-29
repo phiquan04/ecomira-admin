@@ -645,3 +645,67 @@ export const fetchCustomerActivityChart = async (id: string) => {
 
   return response;
 };
+
+// GET USER STATISTICS (total, sellers, customers)
+export const fetchUserStats = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/user-stats`)
+    .then((res) => {
+      console.log("axios get user stats:", res.data)
+      return res.data
+    })
+    .catch((err) => {
+      console.log("Error fetching user stats:", err)
+      throw err
+    })
+
+  return response
+};
+
+// GET REGISTRATION TRENDS (weekly, monthly, yearly)
+export const fetchRegistrationTrends = async (period: "weekly" | "monthly" | "yearly" = "weekly") => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/registration-trends?period=${period}`)
+    .then((res) => {
+      console.log("axios get registration trends:", res.data)
+      return res.data
+    })
+    .catch((err) => {
+      console.log("Error fetching registration trends:", err)
+      throw err
+    })
+
+  return response
+};
+
+// GET TOP 10 SELLERS BY REVENUE
+export const fetchTopSellers = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/top-sellers`)
+    .then((res) => {
+      console.log("axios get top sellers:", res.data)
+      return res.data
+    })
+    .catch((err) => {
+      console.log("Error fetching top sellers:", err)
+      throw err
+    })
+
+  return response
+};
+
+// GET TOP 10 CUSTOMERS BY SPENDING
+export const fetchTopCustomers = async () => {
+  const response = await axios
+    .get(`${baseURL}/api/analytics/top-customers`)
+    .then((res) => {
+      console.log("axios get top customers:", res.data)
+      return res.data
+    })
+    .catch((err) => {
+      console.log("Error fetching top customers:", err)
+      throw err
+    })
+
+  return response
+};

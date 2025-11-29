@@ -1,33 +1,17 @@
-import express from 'express';
-import users from './users'; 
-import MessageResponse from '../interfaces/MessageResponse';
-import emojis from './emojis';
-import categories from './categories';
-import products from './products';
-import { 
-  getSellerStats, 
-  getBuyerStats, 
-  getUserRegistrations, 
-  getProductRegistrations 
-} from './analytics';
+import express from "express"
+import usersRouter from "./users"
+import productsRouter from "./products"
+import categoriesRouter from "./categories"
+import loginRouter from "./login"
+import analyticsRouter from "./analytics"
 
-const router = express.Router();
+const router = express.Router()
 
-router.get<{}, MessageResponse>('/', (req, res) => {
-  res.json({
-    message: 'API - 👋🌎🌍🌏',
-  });
-});
+// Register all routes
+router.use("/users", usersRouter)
+router.use("/products", productsRouter)
+router.use("/categories", categoriesRouter)
+router.use("/login", loginRouter)
+router.use("/analytics", analyticsRouter)
 
-router.use('/emojis', emojis);
-router.use('/users', users);
-router.use('/categories', categories);
-router.use('/products', products);
-
-
-router.get('/analytics/seller-stats', getSellerStats);
-router.get('/analytics/buyer-stats', getBuyerStats);
-router.get('/analytics/user-registrations', getUserRegistrations);
-router.get('/analytics/product-registrations', getProductRegistrations);
-
-export default router;
+export default router
