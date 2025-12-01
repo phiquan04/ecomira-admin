@@ -5,7 +5,6 @@ import {
   HiOutlineCube,
   HiOutlineClipboardDocumentList,
   HiOutlineCalendarDays,
-  HiOutlinePresentationChartBar,
 } from "react-icons/hi2"
 
 export const menu = [
@@ -57,17 +56,6 @@ export const menu = [
         url: "/calendar",
         icon: HiOutlineCalendarDays,
         label: "calendar",
-      },
-    ],
-  },
-  {
-    catalog: "analytics",
-    listItems: [
-      {
-        isLink: true,
-        url: "/charts",
-        icon: HiOutlinePresentationChartBar,
-        label: "charts",
       },
     ],
   },

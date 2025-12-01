@@ -16,7 +16,11 @@ const AddData: React.FC<AddDataProps> = ({ slug, isOpen, setIsOpen, editData }) 
 
   useEffect(() => {
     if (editData) {
-      setFormData(editData);
+      setFormData({
+        ...editData,
+        // Đảm bảo avatar được lấy từ editData
+        avatar: editData.avatar || editData.img || '',
+      });
     } else {
       setFormData(slug === 'user' ? {
         fullName: '',
@@ -24,7 +28,8 @@ const AddData: React.FC<AddDataProps> = ({ slug, isOpen, setIsOpen, editData }) 
         phone: '',
         userType: 'seller',
         password: '',
-        isVerified: false
+        isVerified: false,
+        avatar: ''  // Thêm field avatar
       } : {
         name: '',
         icon: '',
@@ -132,6 +137,40 @@ const AddData: React.FC<AddDataProps> = ({ slug, isOpen, setIsOpen, editData }) 
                   onChange={handleChange}
                   className="input input-bordered"
                 />
+              </div>
+
+              {/* Thêm field Avatar URL */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Avatar URL</span>
+                </label>
+                <input
+                  type="text"
+                  name="avatar"
+                  value={formData.avatar || ''}
+                  onChange={handleChange}
+                  className="input input-bordered"
+                  placeholder="https://example.com/avatar.jpg"
+                />
+                <div className="label-text-alt text-gray-500 mt-1">
+                  Enter a valid image URL. If empty, default avatar will be used.
+                </div>
+                {/* Preview avatar nếu có URL */}
+                {formData.avatar && (
+                  <div className="mt-2">
+                    <div className="label-text text-gray-700 mb-1">Preview:</div>
+                    <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-300">
+                      <img 
+                        src={formData.avatar} 
+                        alt="Avatar preview" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/Portrait_Placeholder.png';
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="form-control">

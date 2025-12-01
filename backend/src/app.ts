@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import usersRouter from './api/users';
 import authRouter from './api/login';
+import analyticsRouter from './api/analytics';
 
 import * as middlewares from './middlewares';
 import api from './api';
@@ -47,6 +48,7 @@ app.use(cors({
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/v1', api);
+app.use('/api/analytics', analyticsRouter);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
