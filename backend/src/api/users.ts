@@ -16,7 +16,8 @@ router.get('/', async (req, res) => {
         user_type as "userType",
         is_verified as "verified",
         created_at as "createdAt",
-        updated_at as "updatedAt"
+        updated_at as "updatedAt",
+        avatar  -- Thêm dòng này
       FROM users 
       ORDER BY id ASC
     `);
@@ -24,9 +25,8 @@ router.get('/', async (req, res) => {
     // Format data to match frontend expectations
     const formattedUsers = result.rows.map(user => ({
       ...user,
-      // Add default image since database doesn't have img field
-      img: '/Portrait_Placeholder.png',
-      // For compatibility with existing frontend that expects firstName/lastName
+      // Sử dụng avatar từ database nếu có, nếu không dùng placeholder
+      img: user.avatar || '/Portrait_Placeholder.png',
       firstName: user.fullName.split(' ')[0] || user.fullName,
       lastName: user.fullName.split(' ').slice(1).join(' ') || 'User'
     }));
@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single user by ID
+// GET single user by ID - Sửa query SELECT
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   
@@ -55,7 +55,8 @@ router.get('/:id', async (req, res) => {
         user_type as "userType",
         is_verified as "verified",
         created_at as "createdAt",
-        updated_at as "updatedAt"
+        updated_at as "updatedAt",
+        avatar  -- Thêm dòng này
       FROM users 
       WHERE id = $1
     `, [id]);
@@ -68,7 +69,8 @@ router.get('/:id', async (req, res) => {
     // Format single user data
     const formattedUser = {
       ...user,
-      img: '/Portrait_Placeholder.png',
+      // Sử dụng avatar từ database nếu có, nếu không dùng placeholder
+      img: user.avatar || '/Portrait_Placeholder.png',
       firstName: user.fullName.split(' ')[0] || user.fullName,
       lastName: user.fullName.split(' ').slice(1).join(' ') || 'User'
     };
@@ -82,10 +84,9 @@ router.get('/:id', async (req, res) => {
     });
   }
 });
-
 // POST - CREATE user
 router.post('/', async (req, res) => {
-  const { fullName, email, phone, userType, isVerified, password } = req.body;
+  const { fullName, email, phone, userType, isVerified, password, avatar } = req.body; // Thêm avatar
 
   // Validate required fields
   if (!fullName || !email) {
@@ -104,8 +105,8 @@ router.post('/', async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO users (full_name, email, phone, password_hash, user_type, is_verified, created_at, updated_at) 
-       VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) 
+      `INSERT INTO users (full_name, email, phone, password_hash, user_type, is_verified, created_at, updated_at, avatar) 
+       VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, $7) 
        RETURNING 
          id,
          full_name as "fullName",
@@ -114,8 +115,9 @@ router.post('/', async (req, res) => {
          user_type as "userType",
          is_verified as "verified",
          created_at as "createdAt",
-         updated_at as "updatedAt"`,
-      [fullName, email, phone || null, passwordHash, userType || 'customer', isVerified || false]
+         updated_at as "updatedAt",
+         avatar`,  // Thêm avatar
+      [fullName, email, phone || null, passwordHash, userType || 'customer', isVerified || false, avatar || null] // Thêm avatar
     );
 
     const newUser = result.rows[0];
@@ -123,7 +125,7 @@ router.post('/', async (req, res) => {
     // Format response to match frontend expectations
     const formattedUser = {
       ...newUser,
-      img: '/Portrait_Placeholder.png',
+      img: newUser.avatar || '/Portrait_Placeholder.png',
       firstName: newUser.fullName.split(' ')[0] || newUser.fullName,
       lastName: newUser.fullName.split(' ').slice(1).join(' ') || 'User'
     };
@@ -144,10 +146,9 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT - UPDATE user
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { fullName, email, phone, userType, isVerified, password } = req.body;
+  const { fullName, email, phone, userType, isVerified, password, avatar } = req.body; // Thêm avatar
 
   // Validate required fields
   if (!fullName || !email) {
@@ -176,7 +177,34 @@ router.put('/:id', async (req, res) => {
       query = `
         UPDATE users 
         SET full_name = $1, email = $2, phone = $3, user_type = $4, is_verified = $5, 
-            password_hash = $6, updated_at = CURRENT_TIMESTAMP
+            password_hash = $6, updated_at = CURRENT_TIMESTAMP, avatar = $7
+        WHERE id = $8
+        RETURNING 
+          id,
+          full_name as "fullName",
+          email,
+          phone,
+          user_type as "userType",
+          is_verified as "verified",
+          created_at as "createdAt",
+          updated_at as "updatedAt",
+          avatar  -- Thêm avatar
+      `;
+      params = [
+        fullName, 
+        email, 
+        phone || null, 
+        userType !== undefined ? userType : currentUserType,
+        isVerified || false, 
+        passwordHash, 
+        avatar || null,  // Thêm avatar
+        id
+      ];
+    } else {
+      query = `
+        UPDATE users 
+        SET full_name = $1, email = $2, phone = $3, user_type = $4, is_verified = $5, 
+            updated_at = CURRENT_TIMESTAMP, avatar = $6
         WHERE id = $7
         RETURNING 
           id,
@@ -186,40 +214,16 @@ router.put('/:id', async (req, res) => {
           user_type as "userType",
           is_verified as "verified",
           created_at as "createdAt",
-          updated_at as "updatedAt"
+          updated_at as "updatedAt",
+          avatar  -- Thêm avatar
       `;
-      // Use provided userType or fallback to current user_type
       params = [
         fullName, 
         email, 
         phone || null, 
-        userType !== undefined ? userType : currentUserType, // Fix: preserve current user_type if not provided
+        userType !== undefined ? userType : currentUserType,
         isVerified || false, 
-        passwordHash, 
-        id
-      ];
-    } else {
-      query = `
-        UPDATE users 
-        SET full_name = $1, email = $2, phone = $3, user_type = $4, is_verified = $5, updated_at = CURRENT_TIMESTAMP
-        WHERE id = $6
-        RETURNING 
-          id,
-          full_name as "fullName",
-          email,
-          phone,
-          user_type as "userType",
-          is_verified as "verified",
-          created_at as "createdAt",
-          updated_at as "updatedAt"
-      `;
-      // Use provided userType or fallback to current user_type
-      params = [
-        fullName, 
-        email, 
-        phone || null, 
-        userType !== undefined ? userType : currentUserType, // Fix: preserve current user_type if not provided
-        isVerified || false, 
+        avatar || null,  // Thêm avatar
         id
       ];
     }
@@ -235,7 +239,7 @@ router.put('/:id', async (req, res) => {
     // Format response
     const formattedUser = {
       ...updatedUser,
-      img: '/Portrait_Placeholder.png',
+      img: updatedUser.avatar || '/Portrait_Placeholder.png',
       firstName: updatedUser.fullName.split(' ')[0] || updatedUser.fullName,
       lastName: updatedUser.fullName.split(' ').slice(1).join(' ') || 'User'
     };

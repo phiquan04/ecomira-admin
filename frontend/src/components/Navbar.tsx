@@ -50,7 +50,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="fixed z-[3] top-0 left-0 right-0 bg-white/80 backdrop-blur-md w-full flex justify-between px-4 xl:px-6 py-3 xl:py-4 gap-4 xl:gap-0 border-b border-indigo-100 shadow-sm">
+    <div className="fixed z-[3] top-0 left-0 right-0 bg-white/90 backdrop-blur-md w-full flex justify-between px-4 xl:px-6 py-3 xl:py-4 gap-4 xl:gap-0 border-b border-indigo-100 shadow-sm">
       {/* container */}
       <div className="flex gap-3 items-center">
         {/* for mobile */}
@@ -94,8 +94,8 @@ const Navbar = () => {
       <div className="flex items-center gap-1 xl:gap-2">
         {/* search */}
         <button
-          onClick={() => toast("Gaboleh cari!", { icon: "😠" })}
-          className="hidden sm:inline-flex btn btn-circle btn-ghost text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+          onClick={() => toast("Search coming soon!", { icon: "🔍" })}
+          className="hidden sm:inline-flex btn btn-circle btn-ghost text-gray-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-indigo-600 transition-all"
         >
           <HiSearch className="text-xl 2xl:text-2xl" />
         </button>
@@ -103,7 +103,7 @@ const Navbar = () => {
         {/* fullscreen */}
         <button
           onClick={toggleFullScreen}
-          className="hidden xl:inline-flex btn btn-circle btn-ghost text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+          className="hidden xl:inline-flex btn btn-circle btn-ghost text-gray-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-indigo-600 transition-all"
         >
           {isFullScreen ? (
             <RxEnterFullScreen className="xl:text-xl 2xl:text-2xl" />
@@ -114,8 +114,8 @@ const Navbar = () => {
 
         {/* notification */}
         <button
-          onClick={() => toast("Gaada notif!", { icon: "😠" })}
-          className="btn btn-circle btn-ghost text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+          onClick={() => toast("No notifications!", { icon: "🔔" })}
+          className="btn btn-circle btn-ghost text-gray-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-indigo-600 transition-all"
         >
           <HiOutlineBell className="text-xl 2xl:text-2xl" />
         </button>
@@ -144,7 +144,7 @@ const Navbar = () => {
             <div className="h-px bg-gradient-to-r from-blue-100 to-purple-100 my-2"></div>
             <Link to={"/profile"}>
               <li>
-                <a className="rounded-xl hover:bg-indigo-50 text-gray-700 hover:text-indigo-600 transition-colors">
+                <a className="rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 text-gray-700 hover:text-indigo-600 transition-all">
                   My Profile
                 </a>
               </li>

@@ -16,7 +16,6 @@ import Error from './pages/Error';
 import Profile from './pages/Profile';
 import Categories from './pages/Categories';
 import Calendar from './pages/Calendar';
-import Charts from './pages/Charts';
 import ToasterProvider from './components/ToasterProvider';
 import EditProfile from './pages/EditProfile';
 import User from './pages/User';
@@ -140,10 +139,6 @@ function App() {
         {
           path: '/calendar',
           element: <Calendar />,
-        },
-        {
-          path: '/charts',
-          element: <Charts />,
         },
       ],
       errorElement: <Error />,

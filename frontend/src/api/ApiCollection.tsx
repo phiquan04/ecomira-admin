@@ -373,6 +373,7 @@ export const addUser = async (userData: {
   phone: string;
   userType: string;
   isVerified: boolean;
+  avatar?: string; 
 }) => {
   const response = await axios
     .post(`${baseURL}/api/v1/users`, userData)
@@ -395,6 +396,7 @@ export const updateUser = async (id: string, userData: {
   phone: string;
   userType: string;
   isVerified: boolean;
+  avatar?: string;
 }) => {
   const response = await axios
     .put(`${baseURL}/api/v1/users/${id}`, userData)
