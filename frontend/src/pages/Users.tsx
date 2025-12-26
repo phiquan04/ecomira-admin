@@ -64,13 +64,13 @@ const Users = () => {
       minWidth: 120,
       flex: 1,
     },
-    {
-      field: "createdAt",
-      headerName: "Created At",
-      minWidth: 100,
-      type: "string",
-      flex: 1,
-    },
+    // {
+    //   field: "createdAt",
+    //   headerName: "Created At",
+    //   minWidth: 100,
+    //   type: "string",
+    //   flex: 1,
+    // },
     {
       field: "userType",
       headerName: "userType",

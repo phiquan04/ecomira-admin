@@ -711,3 +711,52 @@ export const fetchTopCustomers = async () => {
 
   return response
 };
+
+// Thêm các API mới vào file ApiCollection.tsx
+// GET CUSTOMER ORDERS BY USER ID
+export const fetchCustomerOrdersByUserId = async (id: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/users/${id}/customer-orders`)
+    .then((res) => {
+      console.log('axios get customer orders:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching customer orders:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET SELLER ORDER ITEMS BY USER ID
+export const fetchSellerOrderItemsByUserId = async (id: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/users/${id}/seller-order-items`)
+    .then((res) => {
+      console.log('axios get seller order items:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching seller order items:', err);
+      throw err;
+    });
+
+  return response;
+};
+
+// GET ORDER DETAILS BY ORDER ID (dùng cho Seller)
+export const fetchOrderDetails = async (orderId: string) => {
+  const response = await axios
+    .get(`${baseURL}/api/v1/orders/${orderId}`)
+    .then((res) => {
+      console.log('axios get order details:', res.data);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('Error fetching order details:', err);
+      throw err;
+    });
+
+  return response;
+};
