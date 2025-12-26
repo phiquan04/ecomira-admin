@@ -2,12 +2,12 @@
 
 import type React from "react"
 
-import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { fetchUserStats, fetchRegistrationTrends, fetchTopSellers, fetchTopCustomers } from "../api/ApiCollection"
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
-import { HiUsers, HiShoppingBag, HiUserGroup } from "react-icons/hi2"
-import { FaCrown, FaMedal, FaAward } from "react-icons/fa"
+import { useState } from "react"
+import { FaAward, FaCrown, FaMedal } from "react-icons/fa"
+import { HiShoppingBag, HiUserGroup, HiUsers } from "react-icons/hi2"
+import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { fetchRegistrationTrends, fetchTopCustomers, fetchTopSellers, fetchUserStats } from "../api/ApiCollection"
 
 // Types
 interface UserStats {
@@ -33,6 +33,7 @@ interface TopUser {
   totalRevenue?: number
   totalSpent?: number
   totalOrders: number
+  deliveredOrders: number
   img: string
 }
 
@@ -174,6 +175,7 @@ const RankBadge = ({ rank }: { rank: number }) => {
 }
 
 // Top Users Table Component
+// Cập nhật bảng TopUsersTable trong Home.tsx
 const TopUsersTable = ({
   title,
   users,
@@ -203,7 +205,8 @@ const TopUsersTable = ({
                 <th className="w-16">Hạng</th>
                 <th>Người dùng</th>
                 <th className="text-right">{type === "seller" ? "Doanh thu" : "Chi tiêu"}</th>
-                <th className="text-right">Đơn hàng</th>
+                <th className="text-right">Tổng đơn</th>
+                <th className="text-right">Đã giao</th>
               </tr>
             </thead>
             <tbody>
@@ -216,7 +219,13 @@ const TopUsersTable = ({
                     <div className="flex items-center gap-3">
                       <div className="avatar">
                         <div className="mask mask-squircle w-10 h-10">
-                          <img src={user.img || "/Portrait_Placeholder.png"} alt={user.fullName} />
+                          <img 
+                            src={user.img || "/Portrait_Placeholder.png"} 
+                            alt={user.fullName}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/Portrait_Placeholder.png';
+                            }}
+                          />
                         </div>
                       </div>
                       <div>
@@ -228,15 +237,24 @@ const TopUsersTable = ({
                             </span>
                           )}
                         </div>
-                        <div className="text-sm opacity-50">{user.email}</div>
+                        <div className="text-sm opacity-50 truncate max-w-xs">{user.email}</div>
                       </div>
                     </div>
                   </td>
                   <td className="text-right font-semibold">
-                    {type === "seller" ? formatCurrency(user.totalRevenue || 0) : formatCurrency(user.totalSpent || 0)}
+                    {type === "seller" ? 
+                      formatCurrency(user.totalRevenue || 0) : 
+                      formatCurrency(user.totalSpent || 0)}
                   </td>
                   <td className="text-right">
-                    <span className="badge badge-ghost">{user.totalOrders} đơn</span>
+                    <span className={`badge ${user.totalOrders > 0 ? 'badge-info' : 'badge-ghost'}`}>
+                      {user.totalOrders} đơn
+                    </span>
+                  </td>
+                  <td className="text-right">
+                    <span className={`badge ${user.deliveredOrders > 0 ? 'badge-success' : 'badge-ghost'}`}>
+                      {user.deliveredOrders} đơn
+                    </span>
                   </td>
                 </tr>
               ))}

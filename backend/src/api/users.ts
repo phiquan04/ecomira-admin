@@ -639,4 +639,128 @@ router.get('/:id/customer-activity-chart', async (req, res) => {
   }
 });
 
+// Thêm vào file users.ts (backend)
+// GET customer orders
+router.get('/:id/customer-orders', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Kiểm tra user có phải là customer không
+    const userCheck = await pool.query(
+      'SELECT user_type FROM users WHERE id = $1',
+      [id]
+    );
+    
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const userType = userCheck.rows[0].user_type;
+    
+    if (userType !== 'customer') {
+      return res.status(400).json({ error: 'User is not a customer' });
+    }
+
+    // Lấy đơn hàng của customer
+    const ordersQuery = `
+      SELECT 
+        o.id,
+        o.order_number as "orderNumber",
+        o.total_amount as "totalAmount",
+        o.shipping_fee as "shippingFee",
+        o.status as "orderStatus",
+        o.payment_method as "paymentMethod",
+        o.payment_status as "paymentStatus",
+        o.shipping_name as "shippingName",
+        o.shipping_phone as "shippingPhone",
+        o.shipping_address as "shippingAddress",
+        o.created_at as "createdAt",
+        COUNT(oi.id) as "itemCount",
+        ARRAY_AGG(
+          JSON_BUILD_OBJECT(
+            'productName', oi.product_name,
+            'quantity', oi.quantity,
+            'price', oi.price,
+            'subtotal', oi.subtotal,
+            'image', oi.image
+          )
+        ) as "items"
+      FROM orders o
+      LEFT JOIN order_items oi ON o.id = oi.order_id
+      WHERE o.customer_id = $1
+      GROUP BY o.id, o.order_number, o.total_amount, o.shipping_fee, 
+               o.status, o.payment_method, o.payment_status,
+               o.shipping_name, o.shipping_phone, o.shipping_address, o.created_at
+      ORDER BY o.created_at DESC
+    `;
+    
+    const result = await pool.query(ordersQuery, [id]);
+    
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching customer orders:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// GET seller order items
+router.get('/:id/seller-order-items', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Kiểm tra user có phải là seller không
+    const userCheck = await pool.query(
+      'SELECT user_type FROM users WHERE id = $1',
+      [id]
+    );
+    
+    if (userCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const userType = userCheck.rows[0].user_type;
+    
+    if (userType !== 'seller') {
+      return res.status(400).json({ error: 'User is not a seller' });
+    }
+
+    // Lấy order items của seller
+    const orderItemsQuery = `
+      SELECT 
+        oi.id,
+        oi.order_id as "orderId",
+        oi.product_id as "productId",
+        oi.product_name as "productName",
+        oi.price,
+        oi.quantity,
+        oi.subtotal,
+        oi.image,
+        oi.created_at as "createdAt",
+        o.order_number as "orderNumber",
+        o.status as "orderStatus",
+        o.payment_status as "paymentStatus",
+        o.shipping_name as "customerName",
+        o.shipping_phone as "customerPhone",
+        o.created_at as "orderDate"
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.id
+      WHERE oi.seller_id = $1
+      ORDER BY oi.created_at DESC
+    `;
+    
+    const result = await pool.query(orderItemsQuery, [id]);
+    
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching seller order items:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 export default router;

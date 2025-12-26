@@ -88,28 +88,32 @@ router.get("/registration-trends", async (req, res) => {
 })
 
 // GET Top 10 Sellers by Revenue
-router.get("/top-sellers", async (req, res) => {
+// Thêm hoặc sửa các endpoints trong analytics.ts
+// GET top 10 sellers by revenue
+router.get('/top-sellers', async (req, res) => {
   try {
-    const query = `
+    const result = await pool.query(`
       SELECT 
         u.id,
         u.full_name as "fullName",
         u.email,
         u.phone,
         u.is_verified as "verified",
-        COALESCE(SUM(oi.subtotal), 0) as "totalRevenue",
-        COUNT(DISTINCT o.id) as "totalOrders"
+        u.avatar,
+        COALESCE(SUM(CASE WHEN o.status = 'delivered' THEN oi.subtotal ELSE 0 END), 0) as "totalRevenue",
+        COUNT(DISTINCT CASE WHEN o.status = 'delivered' THEN oi.order_id END) as "deliveredOrders",
+        COUNT(DISTINCT oi.order_id) as "totalOrders"
       FROM users u
       LEFT JOIN order_items oi ON u.id = oi.seller_id
-      LEFT JOIN orders o ON oi.order_id = o.id AND o.status = 'delivered'
+      LEFT JOIN orders o ON oi.order_id = o.id
       WHERE u.user_type = 'seller'
-      GROUP BY u.id, u.full_name, u.email, u.phone, u.is_verified
+        AND o.status != 'cancelled'  -- Loại trừ đơn hàng đã hủy
+      GROUP BY u.id, u.full_name, u.email, u.phone, u.is_verified, u.avatar
       ORDER BY "totalRevenue" DESC
       LIMIT 10
-    `
-
-    const result = await pool.query(query)
-
+    `);
+    
+    // Format the result
     const topSellers = result.rows.map((row, index) => ({
       rank: index + 1,
       id: row.id,
@@ -117,40 +121,43 @@ router.get("/top-sellers", async (req, res) => {
       email: row.email,
       phone: row.phone,
       verified: row.verified,
-      totalRevenue: Number.parseFloat(row.totalRevenue) || 0,
-      totalOrders: Number.parseInt(row.totalOrders) || 0,
-      img: "/Portrait_Placeholder.png",
-    }))
-
-    res.json(topSellers)
+      totalRevenue: parseFloat(row.totalRevenue),
+      totalOrders: parseInt(row.totalOrders),
+      deliveredOrders: parseInt(row.deliveredOrders),
+      img: row.avatar || '/Portrait_Placeholder.png'
+    }));
+    
+    res.json(topSellers);
   } catch (error) {
-    console.error("Error fetching top sellers:", error)
-    res.status(500).json({ error: "Internal server error" })
+    console.error('Error fetching top sellers:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-})
+});
 
-// GET Top 10 Customers by Spending
-router.get("/top-customers", async (req, res) => {
+// GET top 10 customers by spending
+router.get('/top-customers', async (req, res) => {
   try {
-    const query = `
+    const result = await pool.query(`
       SELECT 
         u.id,
         u.full_name as "fullName",
         u.email,
         u.phone,
         u.is_verified as "verified",
-        COALESCE(SUM(o.total_amount), 0) as "totalSpent",
+        u.avatar,
+        COALESCE(SUM(CASE WHEN o.status = 'delivered' THEN o.total_amount ELSE 0 END), 0) as "totalSpent",
+        COUNT(DISTINCT CASE WHEN o.status = 'delivered' THEN o.id END) as "deliveredOrders",
         COUNT(DISTINCT o.id) as "totalOrders"
       FROM users u
-      LEFT JOIN orders o ON u.id = o.customer_id AND o.status = 'delivered'
+      LEFT JOIN orders o ON u.id = o.customer_id
       WHERE u.user_type = 'customer'
-      GROUP BY u.id, u.full_name, u.email, u.phone, u.is_verified
+        AND o.status != 'cancelled'  -- Loại trừ đơn hàng đã hủy
+      GROUP BY u.id, u.full_name, u.email, u.phone, u.is_verified, u.avatar
       ORDER BY "totalSpent" DESC
       LIMIT 10
-    `
-
-    const result = await pool.query(query)
-
+    `);
+    
+    // Format the result
     const topCustomers = result.rows.map((row, index) => ({
       rank: index + 1,
       id: row.id,
@@ -158,18 +165,18 @@ router.get("/top-customers", async (req, res) => {
       email: row.email,
       phone: row.phone,
       verified: row.verified,
-      totalSpent: Number.parseFloat(row.totalSpent) || 0,
-      totalOrders: Number.parseInt(row.totalOrders) || 0,
-      img: "/Portrait_Placeholder.png",
-    }))
-
-    res.json(topCustomers)
+      totalSpent: parseFloat(row.totalSpent),
+      totalOrders: parseInt(row.totalOrders),
+      deliveredOrders: parseInt(row.deliveredOrders),
+      img: row.avatar || '/Portrait_Placeholder.png'
+    }));
+    
+    res.json(topCustomers);
   } catch (error) {
-    console.error("Error fetching top customers:", error)
-    res.status(500).json({ error: "Internal server error" })
+    console.error('Error fetching top customers:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-})
-
+});
 // GET REVENUE DATA
 router.get("/revenue-data", async (req, res) => {
   try {

@@ -189,7 +189,7 @@ const AddData: React.FC<AddDataProps> = ({ slug, isOpen, setIsOpen, editData }) 
                 </select>
               </div>
 
-              <div className="form-control">
+              {/* <div className="form-control">
                 <label className="label">
                   <span className="label-text">Password {!editData && '*'}</span>
                 </label>
@@ -202,7 +202,7 @@ const AddData: React.FC<AddDataProps> = ({ slug, isOpen, setIsOpen, editData }) 
                   placeholder={editData ? "Leave blank to keep current" : ""}
                   required={!editData}
                 />
-              </div>
+              </div> */}
 
               <div className="form-control">
                 <label className="cursor-pointer label justify-start gap-2">
